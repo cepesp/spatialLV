@@ -67,7 +67,7 @@ spatial2Server <- function(input, output, session) {
     municipio <- input$municipio
     if(municipio == "")
       municipio <- "br"
-    state_shp <- readr::read_rds(paste0("data/shape_municipios/", municipio,".rds"))
+    state_shp <- readr::read_rds(paste0("data/output/shape_municipios/", municipio,".rds"))
   })
 
   observe({
