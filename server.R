@@ -70,31 +70,38 @@ spatial2Server <- function(input, output, session) {
     state_shp <- readr::read_rds(paste0("data/output/shape_municipios/", municipio,".rds"))
   })
 
-  observe({
-    municipio <- input$municipio
-    
-    geo <- as.numeric(st_bbox(state_shp()))
-    
-    ### Base Map ###
-    
-    leafletProxy("map") %>%
+  
+   
+   observe({
+     leafletProxy("map") %>%
       clearShapes() %>%
       clearControls() %>% 
-      addPolygons(data = state_shp(),
-                  fillOpacity  = 0,
-                  weight       = 3,
-                  color        = "black",
-                  fillColor    = NULL) %>% 
-      flyToBounds(geo[3], geo[4], geo[1], geo[2])
+      addPolygons(data= state_shp(), 
+                  fillOpacity = 0, 
+                  weight=2, 
+                  color="black") %>% 
+      addCircleMarkers(data = LVs_votes_turno_1_Largest,
+                       stroke = F,
+                       opacity=0.7,
+                       fillOpacity = 0.7,
+                       radius= ~Tot_Votes/1000,
+                       popup=~paste0("<h4> Local de Votação ", NR_LOCVOT,"</h4> Partido ",
+                                     NUM_VOTAVEL," recebeu ",QTDE_VOTOS," votos, ",
+                                     round(Pct_Votos,1),"% do total de ",Tot_Votes," votos")) %>% 
+      addLegend("bottomright", 
+                pal = party_palette_discrete,
+                values = ~factor(party_colours$Numero_Partido),
+                title = "Partidos",
+                opacity = 1)
   })
   
-  
+ 
   output$Note <- renderUI({
     note <- paste0("<font size='3'> Os mapas eleitorais foram desenvolvidos no âmbito do 
                    projeto temático da FAPESP (processo # 2013/15658-1), sob coordenação do 
                    Prof. George Avelino. Eles utilizam os dados do TSE coletados e limpos pela 
                    equipe do <a href='http://cepesp.io/'> CEPESPData</a>. Desenvolvido por Jonathan Phillips 
-                   e Rafael de Castro Coelho Silva com apoio dos pesquisadores do CEPESP. </font>")
+                   com apoio dos pesquisadores do CEPESP. </font>")
     HTML(note)
   })
   
