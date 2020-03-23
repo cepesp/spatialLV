@@ -38,7 +38,9 @@ sidebarPanelUi <- function () {
         )
       ),
       uiOutput("turno_UI"),
-      actionButton("button", label = strong("Atualizar"), class = "btn-primary btn-block"),
+      actionButton("button", 
+                   label = strong("Atualizar"), 
+                   class = "btn-primary btn-block"),
         conditionalPanel(
         condition = 'input.button > 0',
         downloadButton('downloadMap', class="btn btn-success btn-block mt-10", label = "Download")

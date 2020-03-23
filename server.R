@@ -57,38 +57,53 @@ spatial2Server <- function(input, output, session) {
   municipio <- input$municipio
   })
   
-
-  output$map <- renderLeaflet({
-    leaflet(options = leafletOptions(zoomControl = FALSE)) %>%
-      addProviderTiles(providers$CartoDB.Positron)
-  })
   
   state_shp <- reactive({
     municipio <- input$municipio
     if(municipio == "")
       municipio <- "br"
     state_shp <- readr::read_rds(paste0("data/output/shape_municipios/", municipio,".rds"))
+    
   })
-
   
    
-   observe({
-     leafletProxy("map") %>%
-      clearShapes() %>%
-      clearControls() %>% 
-      addPolygons(data= state_shp(), 
-                  fillOpacity = 0, 
-                  weight=2, 
-                  color="black") %>% 
-      addCircleMarkers(data = LVs_votes_turno_1_Largest,
+    output$map <- renderLeaflet({
+      municipio <- input$municipio
+      
+      geo <- as.numeric(st_bbox(state_shp()))
+      
+      leaflet(options = leafletOptions(zoomControl = FALSE)) %>%
+        addPolygons(data= state_shp(), 
+                    fillOpacity = 0, 
+                    weight=2, 
+                    color="black") %>% 
+        addProviderTiles(providers$CartoDB.Positron)%>% 
+        flyToBounds(geo[3], geo[4], geo[1], geo[2])
+    })
+    
+    parties <- as.character(unique(LVs_votes_turno_1_Largest$Largest_Party))
+    parties <- parties[!(parties %in% c(95, 96))]
+    parties <- parties[!is.na(parties)]
+    
+    
+   observeEvent(input$button,{
+     
+     for(party in parties){
+     leafletProxy("map",
+                  data = LVs_votes_turno_1_Largest) %>%
+         clearControls() %>% 
+      addCircleMarkers(data = LVs_votes_turno_1_Largest %>% 
+                       dplyr::filter(Largest_Party == party), 
                        stroke = F,
                        opacity=0.7,
                        fillOpacity = 0.7,
                        radius= ~Tot_Votes/1000,
                        popup=~paste0("<h4> Local de Votação ", NR_LOCVOT,"</h4> Partido ",
                                      NUM_VOTAVEL," recebeu ",QTDE_VOTOS," votos, ",
-                                     round(Pct_Votos,1),"% do total de ",Tot_Votes," votos")) %>% 
-      addLegend("bottomright", 
+                                     round(Pct_Votos,1),"% do total de ",Tot_Votes," votos"),
+                       fillColor = ~party_palettes[[as.character(party)]](Pct_Votos))} %>%   
+     
+       addLegend("topright", 
                 pal = party_palette_discrete,
                 values = ~factor(party_colours$Numero_Partido),
                 title = "Partidos",
