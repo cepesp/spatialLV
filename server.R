@@ -25,7 +25,8 @@ source("database.R")
 
 spatial2Server <- function(input, output, session) {
   
-  ### Turno ###
+  ### Turno 
+  
   turno <- reactive({
     cargo <- as.numeric(input$cargo)
     if(cargo %in% c(1,3)){
@@ -49,14 +50,9 @@ spatial2Server <- function(input, output, session) {
                      ))
     }
   })
+ 
   
-  reactive({
-  cargo <- as.numeric(input$cargo)
-  ano <- as.numeric(input$ano)
-  turno_use <- turno()
-  municipio <- input$municipio
-  })
-  
+ ### Shapes
   
   state_shp <- reactive({
     municipio <- input$municipio
@@ -66,7 +62,16 @@ spatial2Server <- function(input, output, session) {
     
   })
   
-   
+ ### Partidos
+  
+  parties <- as.character(unique(LVs_votes_turno_1_Largest$Largest_Party))
+  parties <- parties[!(parties %in% c(95, 96))]
+  parties <- parties[!is.na(parties)]
+  
+ ### Mapa
+  
+  # Base do mapa
+  
     output$map <- renderLeaflet({
       municipio <- input$municipio
       
@@ -80,10 +85,9 @@ spatial2Server <- function(input, output, session) {
         addProviderTiles(providers$CartoDB.Positron)%>% 
         flyToBounds(geo[3], geo[4], geo[1], geo[2])
     })
-    
-    parties <- as.character(unique(LVs_votes_turno_1_Largest$Largest_Party))
-    parties <- parties[!(parties %in% c(95, 96))]
-    parties <- parties[!is.na(parties)]
+  
+
+   # Distribuicao de votos nos locais de votacao
     
     
    observeEvent(input$button,{
@@ -110,7 +114,9 @@ spatial2Server <- function(input, output, session) {
                 opacity = 1)
   })
   
+ ### Controles de zoom   
    
+   # Zoom out
    
    observeEvent(input$map_zoom_out ,{
      leafletProxy("map") %>% 
@@ -118,7 +124,7 @@ spatial2Server <- function(input, output, session) {
                lng  = (input$map_bounds$east + input$map_bounds$west) / 2,
                zoom = input$map_zoom - 1)
    })
-   # Zoom control - zoom in
+   # Zoom in
    observeEvent(input$map_zoom_in ,{
      leafletProxy("map") %>% 
        setView(lat  = (input$map_bounds$north + input$map_bounds$south) / 2,
@@ -126,6 +132,9 @@ spatial2Server <- function(input, output, session) {
                zoom = input$map_zoom + 1)
    })
  
+   
+ ### Sobre   
+   
   output$Note <- renderUI({
     note <- paste0("<font size='3'> Os mapas eleitorais foram desenvolvidos no âmbito do 
                    projeto temático da FAPESP (processo # 2013/15658-1), sob coordenação do 
@@ -137,8 +146,6 @@ spatial2Server <- function(input, output, session) {
   
   
  
-    
-    # actual tooltip created as wellPanel
   
   
 }

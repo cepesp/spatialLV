@@ -3,6 +3,10 @@ library(shinyBS)
 library(mapview)
 library(shinyalert)
 
+### Controles do painel
+
+# Municipio
+
 sidebarPanelUi <- function () {
   return(
     tags$div(class="pad-20",
@@ -17,6 +21,9 @@ sidebarPanelUi <- function () {
           placeholder = "Selecione um município"
         )
       ),
+      
+  # Cargo
+  
       selectizeInput(
         "cargo",
         label = NULL,
@@ -27,6 +34,9 @@ sidebarPanelUi <- function () {
           placeholder = "Selecione um cargo"
         )
       ),
+  
+  # Ano
+  
       selectizeInput(
         "ano",
         label = NULL,
@@ -36,10 +46,19 @@ sidebarPanelUi <- function () {
           placeholder = "Selecione um ano"
         )
       ),
+  
+  # Turno
+  
       uiOutput("turno_UI"),
+  
+  # Botao 'atualizar'
+  
       actionButton("button", 
                    label = strong("Atualizar"), 
                    class = "btn-primary btn-block"),
+  
+  # Botao 'download'
+  
         conditionalPanel(
         condition = 'input.button > 0',
         downloadButton('downloadMap', 
@@ -50,6 +69,8 @@ sidebarPanelUi <- function () {
   )
   
 }
+
+  # Mapa
 
 mapTabPanelUi <- function () {
   return(tabPanel(
@@ -67,6 +88,9 @@ mapTabPanelUi <- function () {
                     width = "100%", 
                     height = "100%")
     ),
+    
+  # Controles do mapa
+    
     absolutePanel(
       draggable = FALSE,
       top = "auto",
@@ -81,6 +105,8 @@ mapTabPanelUi <- function () {
    
   ))
 }
+
+### Sobre
 
 aboutTabPanelUi <- function () {
   return (

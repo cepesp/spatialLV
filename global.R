@@ -5,13 +5,14 @@ library(tinter)
 library(purrr)
 library(leaflet)
 
+### Carrega os bancos de dados
 
 LVs_votes_turno_1_Largest <- readRDS("data/input/LVs_votes_turno_1_Largest.rds")
 
-Ano <- 2016
-Municipio <- 3550308
-
 muns <- readRDS("data/input/muns.rds")
+
+
+### Cria as paletas de cores
 
 party_colours <- tibble(Numero_Partido=c(10, 13, 15, 45),
                         High_Colour=c("#0066CC","#c4122d","#00aa4f","#0080FF")) %>%
