@@ -2,7 +2,6 @@ library(shinythemes)
 library(shinyBS)
 library(mapview)
 library(shinyalert)
-library(leaflet)
 
 sidebarPanelUi <- function () {
   return(
@@ -43,7 +42,9 @@ sidebarPanelUi <- function () {
                    class = "btn-primary btn-block"),
         conditionalPanel(
         condition = 'input.button > 0',
-        downloadButton('downloadMap', class="btn btn-success btn-block mt-10", label = "Download")
+        downloadButton('downloadMap', 
+                       class="btn btn-success btn-block mt-10", 
+                       label = "Download")
       )
     )
   )
@@ -62,7 +63,9 @@ mapTabPanelUi <- function () {
                  ".leaflet-top.leaflet-right .leaflet-control {
       margin-right: 10px; margin-top: 250px;
     }"),
-      leafletOutput("map", width = "100%", height = "100%")
+      leafletOutput("map", 
+                    width = "100%", 
+                    height = "100%")
     ),
     absolutePanel(
       draggable = FALSE,

@@ -2,7 +2,6 @@ library(magrittr)
 library(plyr)
 library(dplyr)
 library(tinter)
-library(radiant)
 library(purrr)
 library(leaflet)
 

@@ -110,6 +110,21 @@ spatial2Server <- function(input, output, session) {
                 opacity = 1)
   })
   
+   
+   
+   observeEvent(input$map_zoom_out ,{
+     leafletProxy("map") %>% 
+       setView(lat  = (input$map_bounds$north + input$map_bounds$south) / 2,
+               lng  = (input$map_bounds$east + input$map_bounds$west) / 2,
+               zoom = input$map_zoom - 1)
+   })
+   # Zoom control - zoom in
+   observeEvent(input$map_zoom_in ,{
+     leafletProxy("map") %>% 
+       setView(lat  = (input$map_bounds$north + input$map_bounds$south) / 2,
+               lng  = (input$map_bounds$east + input$map_bounds$west) / 2,
+               zoom = input$map_zoom + 1)
+   })
  
   output$Note <- renderUI({
     note <- paste0("<font size='3'> Os mapas eleitorais foram desenvolvidos no âmbito do 
