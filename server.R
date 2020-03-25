@@ -21,7 +21,7 @@ library(tidyr)
 library(shiny)
 
 source("global.R")
-source("database.R")
+#source("database.R")
 
 spatial2Server <- function(input, output, session) {
   
@@ -43,14 +43,24 @@ spatial2Server <- function(input, output, session) {
                      label = NULL,
                      selected = NULL,
                      choices = list("",
-                                    "1º Turno" = 1,
-                                    "2º Turno" = 2),
+                                    "1º Turno" = 1),
                      options = list(
                        placeholder = "Selecione um turno"
                      ))
     }
   })
- 
+  
+  mun_code <- reactive({
+    muns_ref <- tibble(COD_MUN_IBGE=c(3550308,3304557,3513801,3501608,
+                                      3530607,3548500,3548807),
+           Nome_Municipio=c("São Paulo","Rio de Janeiro","Diadema","Americana",
+                            "Mogi das Cruzes","Santos","São Caetano do Sul"))
+    mun_code <- muns_ref %>% filter(Nome_Municipio==input$municipio) %>%
+      pull(COD_MUN_IBGE)
+    cat(mun_code)
+    return(mun_code)
+  })
+
   
  ### Shapes
   
@@ -64,17 +74,24 @@ spatial2Server <- function(input, output, session) {
   
  ### Partidos
   
-  parties <- as.character(unique(LVs_votes_turno_1_Largest$Largest_Party))
-  parties <- parties[!(parties %in% c(95, 96))]
-  parties <- parties[!is.na(parties)]
-  
+  parties <- reactive({
+    
+    parties <- LVs_votes_turno_1_Largest %>% 
+      filter(COD_MUN_IBGE==mun_code())  %>% 
+      st_drop_geometry() %>%
+      distinct(Largest_Party) %>%
+      filter(!(Largest_Party %in% c(95, 96))) %>%
+      filter(!is.na(Largest_Party)) %>%
+      pull(Largest_Party)
+    
+    cat(parties)
+    return(parties)
+  })    
  ### Mapa
   
   # Base do mapa
   
     output$map <- renderLeaflet({
-      municipio <- input$municipio
-      
       geo <- as.numeric(st_bbox(state_shp()))
       
       leaflet(options = leafletOptions(zoomControl = FALSE)) %>%
@@ -92,12 +109,12 @@ spatial2Server <- function(input, output, session) {
     
    observeEvent(input$button,{
      
-     for(party in parties){
-     leafletProxy("map",
-                  data = LVs_votes_turno_1_Largest) %>%
+     for(party in parties()){
+     leafletProxy("map", data=LVs_votes_turno_1_Largest) %>%
          clearControls() %>% 
       addCircleMarkers(data = LVs_votes_turno_1_Largest %>% 
-                       dplyr::filter(Largest_Party == party), 
+                       dplyr::filter(COD_MUN_IBGE==mun_code()
+                                     & Largest_Party == party), 
                        stroke = F,
                        opacity=0.7,
                        fillOpacity = 0.7,
@@ -111,7 +128,14 @@ spatial2Server <- function(input, output, session) {
                 pal = party_palette_discrete,
                 values = ~factor(party_colours$Numero_Partido),
                 title = "Partidos",
-                opacity = 1)
+                opacity = 1) %>%
+       addLegend("bottomleft",
+                 pal = colorNumeric(c(tinter("#525252",direction="tints",steps=10)[3],"#525252"), 
+                                    domain=c(20,80)),
+                 values=seq(20,80,10),
+                 title="Proporção do Voto",
+                 opacity=1
+       )
   })
   
  ### Controles de zoom   

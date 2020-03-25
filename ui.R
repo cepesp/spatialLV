@@ -16,7 +16,8 @@ sidebarPanelUi <- function () {
         "municipio",
         label = NULL,
         selected = NULL,
-        choices = c("", "São Paulo"),
+        choices = c("", "São Paulo","Rio de Janeiro","Diadema","Americana",
+                    "Mogi das Cruzes","Santos","São Caetano do Sul"),
         options = list(
           placeholder = "Selecione um município"
         )
@@ -41,7 +42,7 @@ sidebarPanelUi <- function () {
         "ano",
         label = NULL,
         selected = NULL,
-        choices = c("", 2004, 2008, 2012, 2016),
+        choices = c("", 2016),
         options = list(
           placeholder = "Selecione um ano"
         )
