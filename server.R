@@ -53,8 +53,8 @@ spatial2Server <- function(input, output, session) {
   mun_code <- reactive({
     muns_ref <- tibble(COD_MUN_IBGE=c(3550308,3304557,3513801,3501608,
                                       3530607,3548500,3548807),
-           Nome_Municipio=c("São Paulo","Rio de Janeiro","Diadema","Americana",
-                            "Mogi das Cruzes","Santos","São Caetano do Sul"))
+           Nome_Municipio=c("São Paulo","Rio De Janeiro","Diadema","Americana",
+                            "Mogi Das Cruzes","Santos","São Caetano Do Sul"))
     mun_code <- muns_ref %>% filter(Nome_Municipio==input$municipio) %>%
       pull(COD_MUN_IBGE)
     cat(mun_code)
