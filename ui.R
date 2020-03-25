@@ -16,8 +16,8 @@ sidebarPanelUi <- function () {
         "municipio",
         label = NULL,
         selected = NULL,
-        choices = c("", "São Paulo","Rio de Janeiro","Diadema","Americana",
-                    "Mogi das Cruzes","Santos","São Caetano do Sul"),
+        choices = c("", "São Paulo","Rio De Janeiro","Diadema","Americana",
+                    "Mogi Das Cruzes","Santos","São Caetano Do Sul"),
         options = list(
           placeholder = "Selecione um município"
         )
