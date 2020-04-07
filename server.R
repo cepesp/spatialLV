@@ -9,7 +9,7 @@ library(stringr)
 source("global.R")
 
 #input <- tibble(cargo=6,ano=2014,turno=1,estado="São Paulo",mun="Adolfo")
-#input <- tibble(cargo=1,ano=2012,turno=1,estado="Rio de Janeiro",mun="Rio de Janeiro")
+#input <- tibble(cargo=1,ano=2010,turno=1,estado="Rio de Janeiro",mun="Rio de Janeiro")
 
 spatial2Server <- function(input, output, session) {
   
@@ -202,7 +202,7 @@ spatial2Server <- function(input, output, session) {
       
       addLegend("topright", 
                 pal = party_palette_discrete,
-                values = ~factor(parties_legend()$NUM_VOTAVEL),
+                values = ~parties_legend()$NUM_VOTAVEL,
                 title = "Partidos",
                 opacity = 1) %>%
       addLegend("bottomleft",
@@ -248,3 +248,4 @@ spatial2Server <- function(input, output, session) {
   
     }
     
+

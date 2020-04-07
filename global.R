@@ -13,7 +13,7 @@ IBGE_Muns <- readr::read_rds("data/input/IBGE_muns.rds") #%>%
 
 #Arbitrary colours for PSD, PP, PCB, PTC, Patriota, UP, PRP
 #54
-party_colours <- tibble(NUM_VOTAVEL=c(10, 11, 12, 13, 14, 15,
+party_colours <- tibble(NUM_VOTAVEL=factor(c(10, 11, 12, 13, 14, 15,
                                          16, 17, 18, 19,
                                          20, 21, 22, 23, 25,
                                          27, 28, 29, 30, 35,
@@ -21,7 +21,7 @@ party_colours <- tibble(NUM_VOTAVEL=c(10, 11, 12, 13, 14, 15,
                                          43, 45, 50, 51,
                                          55, 65, 70, 77,
                                          80, 90,
-                                         31, 33, 44, 54),
+                                         31, 33, 44, 54)),
                         Sigla_Partido=c("REP","PP","PDT","PT","PTB","(P)MDB",
                                         "PSTU","PSL","REDE","PODE",
                                         "PSC","PCB","PL","CDN","DEM",
@@ -57,4 +57,5 @@ party_colours_discrete <- party_colours %>%
                 "palette"=High_Colour)
 
 party_palette_discrete <- colorFactor(palette=party_colours$High_Colour, 
-                                      domain=party_colours$NUM_VOTAVEL)
+                                      levels=party_colours$NUM_VOTAVEL)
+
