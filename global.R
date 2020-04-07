@@ -9,9 +9,10 @@ IBGE_Muns <- readr::read_rds("data/input/IBGE_muns.rds") #%>%
   #filter(UF=="São Paulo" | COD_MUN_IBGE==3304557)
 
 ### Cria as paletas de cores
+#https://pt.wikipedia.org/wiki/Predefini%C3%A7%C3%A3o:Cor_de_partido_pol%C3%ADtico/BRA
 
-#Arbitrary colours for PSD, PP, PCB, PTC, Patriota, UP
-
+#Arbitrary colours for PSD, PP, PCB, PTC, Patriota, UP, PRP
+#54
 party_colours <- tibble(NUM_VOTAVEL=c(10, 11, 12, 13, 14, 15,
                                          16, 17, 18, 19,
                                          20, 21, 22, 23, 25,
@@ -19,7 +20,8 @@ party_colours <- tibble(NUM_VOTAVEL=c(10, 11, 12, 13, 14, 15,
                                          36, 40,
                                          43, 45, 50, 51,
                                          55, 65, 70, 77,
-                                         80, 90),
+                                         80, 90,
+                                         31, 33, 44, 54),
                         Sigla_Partido=c("REP","PP","PDT","PT","PTB","(P)MDB",
                                         "PSTU","PSL","REDE","PODE",
                                         "PSC","PCB","PL","CDN","DEM",
@@ -27,7 +29,8 @@ party_colours <- tibble(NUM_VOTAVEL=c(10, 11, 12, 13, 14, 15,
                                         "PTC","PSB",
                                         "PV","PSDB","PSOL","PARTRI",
                                         "PSD","PCdoB","AVANTE","SD",
-                                        "UP","PROS"),
+                                        "UP","PROS",
+                                        "PHS","PMN","PRP", "PPL"),
                         High_Colour=c("#0066CC","#756bb1","#FE8E6D","#c4122d","#00bfff","#00aa4f",
                                       "#FF0000","#054577","#00C2BB","#31a836",
                                       "#006f41","#8c510a","#FF4500","#ec008c","#8CC63E",
@@ -35,7 +38,8 @@ party_colours <- tibble(NUM_VOTAVEL=c(10, 11, 12, 13, 14, 15,
                                       "#999999","#e5ad02",
                                       "#006600","#0080FF","#fbe106","#c51b7d",
                                       "#feb24c","#DA251C","#d05f3b","#1b1845",
-                                      "#bebada","#ec8c34")) %>%
+                                      "#bebada","#ec8c34",
+                                      "#831D1C","#DD3333","#FFFF00", "#9ACD32")) %>%
   rowwise() %>%
   mutate(Low_Colour=tinter(High_Colour, direction="tints", steps=10)[3],
          palette=list(c(Low_Colour, High_Colour)))

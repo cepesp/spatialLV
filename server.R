@@ -9,6 +9,7 @@ library(stringr)
 source("global.R")
 
 #input <- tibble(cargo=6,ano=2014,turno=1,estado="São Paulo",mun="Adolfo")
+#input <- tibble(cargo=1,ano=2012,turno=1,estado="Rio de Janeiro",mun="Rio de Janeiro")
 
 spatial2Server <- function(input, output, session) {
   
@@ -34,19 +35,21 @@ spatial2Server <- function(input, output, session) {
     )
     })
   
-  output$cargo_UI <- renderUI({
-    if (input$ano %in% c(2008, 2012, 2016)){
-      cargos <- list("Prefeito"=11, "Vereador"=13)
+  output$ano_UI <- renderUI({
+    if (input$cargo %in% c(11, 13)){
+      anos <- c(2008, 2012, 2016)
     } else (
-      cargos <- list("Presidente"=1, "Governador"=3, "Senador"=5, "Deputado Federal"=6, "Deptuado Estadual"=7)
+      anos <- c(2006, 2010, 2014, 2018)
     )
-    selectizeInput("cargo", 
-                   label = NULL,
-                   selected = 11,
-                   choices = cargos,
-                   options = list(
-                     placeholder = "Selecione um cargo"
-                   ))
+    sliderInput(
+      "ano",
+      label = NULL,
+      min=min(anos), 
+      max=max(anos),
+      value=max(anos),
+      step=4,
+      sep=""
+    )
   })
   
     mun_code <- reactive({

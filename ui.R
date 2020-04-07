@@ -23,15 +23,14 @@ sidebarPanelUi <- function () {
              ),
              uiOutput("mun_UI"),
              selectizeInput(
-               "ano",
+               "cargo",
                label = NULL,
-               selected = 2016,
-               choices = c("", seq(2006, 2016, 2)),
+               selected = NULL,
+               choices = list("Presidente"=1, "Governador"=3, "Senador"=5, "Deputado Federal"=6, "Deptuado Estadual"=7, "Prefeito"=11, "Vereador"=13),
                options = list(
-                 placeholder = "Selecione um ano"
-               )
-             ),
-             uiOutput("cargo_UI"),
+                 placeholder = "Selecione um Estado"
+               )),
+               uiOutput("ano_UI"),
              # Turno
              #      uiOutput("turno_UI"),
              
