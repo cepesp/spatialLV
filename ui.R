@@ -13,44 +13,37 @@ sidebarPanelUi <- function () {
       useShinyalert(),
       h4("Opções:"),
       selectizeInput(
-        "municipio",
+        "estado",
         label = NULL,
         selected = NULL,
+<<<<<<< HEAD
+        choices = c("", "São Paulo","Rio de Janeiro"),
+=======
         choices = c("", "São Paulo","Rio De Janeiro","Diadema","Americana",
                     "Mogi Das Cruzes","Santos","São Caetano Do Sul"),
+>>>>>>> ed2d01d2b5706630f346f897547e6da5f972ad61
         options = list(
-          placeholder = "Selecione um município"
+          placeholder = "Selecione um Estado"
         )
       ),
-      
-  # Cargo
-  
-      selectizeInput(
-        "cargo",
-        label = NULL,
-        selected = NULL,
-        choices = c("",
-          "Prefeito" = 11),
-        options = list(
-          placeholder = "Selecione um cargo"
-        )
-      ),
-  
-  # Ano
-  
+      uiOutput("mun_UI"),
       selectizeInput(
         "ano",
         label = NULL,
+<<<<<<< HEAD
+        selected = 2016,
+        choices = c("", seq(2006, 2016, 2)),
+=======
         selected = NULL,
         choices = c("", 2016),
+>>>>>>> ed2d01d2b5706630f346f897547e6da5f972ad61
         options = list(
           placeholder = "Selecione um ano"
         )
       ),
-  
+      uiOutput("cargo_UI"),
   # Turno
-  
-      uiOutput("turno_UI"),
+#      uiOutput("turno_UI"),
   
   # Botao 'atualizar'
   
