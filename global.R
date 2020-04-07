@@ -10,7 +10,6 @@ IBGE_Muns <- readr::read_rds("data/input/IBGE_muns.rds") #%>%
 
 ### Cria as paletas de cores
 
-<<<<<<< HEAD
 #Arbitrary colours for PSD, PP, PCB, PTC, Patriota, UP
 
 party_colours <- tibble(NUM_VOTAVEL=c(10, 11, 12, 13, 14, 15,
@@ -37,10 +36,6 @@ party_colours <- tibble(NUM_VOTAVEL=c(10, 11, 12, 13, 14, 15,
                                       "#006600","#0080FF","#fbe106","#c51b7d",
                                       "#feb24c","#DA251C","#d05f3b","#1b1845",
                                       "#bebada","#ec8c34")) %>%
-=======
-party_colours <- tibble(Numero_Partido=c(10, 13, 15, 20, 43, 45, 50, 77),
-                        High_Colour=c("#0066CC","#c4122d","#00aa4f","#006f41","#006600","#0080FF",	"#fbe106","#1b1845")) %>%
->>>>>>> ed2d01d2b5706630f346f897547e6da5f972ad61
   rowwise() %>%
   mutate(Low_Colour=tinter(High_Colour, direction="tints", steps=10)[3],
          palette=list(c(Low_Colour, High_Colour)))
@@ -51,7 +46,6 @@ party_palettes <- party_colours %>%
   setNames(party_colours$NUM_VOTAVEL)
 
 party_colours_discrete <- party_colours %>% 
-<<<<<<< HEAD
   ungroup() %>% 
   dplyr::mutate(NUM_VOTAVEL=factor(NUM_VOTAVEL)) %>% 
   dplyr::select(NUM_VOTAVEL,High_Colour) %>%
@@ -60,13 +54,3 @@ party_colours_discrete <- party_colours %>%
 
 party_palette_discrete <- colorFactor(palette=party_colours$High_Colour, 
                                       domain=party_colours$NUM_VOTAVEL)
-
-=======
-  dplyr::mutate(Numero_Partido=factor(Numero_Partido)) %>% 
-  dplyr::select(Numero_Partido,High_Colour) %>%
-  dplyr::rename("domain"=Numero_Partido,
-                "palette"=High_Colour)
-
-party_palette_discrete <- colorFactor(palette=party_colours$High_Colour, 
-                                      domain=party_colours$Numero_Partido)
->>>>>>> ed2d01d2b5706630f346f897547e6da5f972ad61

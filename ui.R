@@ -10,61 +10,51 @@ library(shinyalert)
 sidebarPanelUi <- function () {
   return(
     tags$div(class="pad-20",
-      useShinyalert(),
-      h4("Opções:"),
-      selectizeInput(
-        "estado",
-        label = NULL,
-        selected = NULL,
-<<<<<<< HEAD
-        choices = c("", "São Paulo","Rio de Janeiro"),
-=======
-        choices = c("", "São Paulo","Rio De Janeiro","Diadema","Americana",
-                    "Mogi Das Cruzes","Santos","São Caetano Do Sul"),
->>>>>>> ed2d01d2b5706630f346f897547e6da5f972ad61
-        options = list(
-          placeholder = "Selecione um Estado"
-        )
-      ),
-      uiOutput("mun_UI"),
-      selectizeInput(
-        "ano",
-        label = NULL,
-<<<<<<< HEAD
-        selected = 2016,
-        choices = c("", seq(2006, 2016, 2)),
-=======
-        selected = NULL,
-        choices = c("", 2016),
->>>>>>> ed2d01d2b5706630f346f897547e6da5f972ad61
-        options = list(
-          placeholder = "Selecione um ano"
-        )
-      ),
-      uiOutput("cargo_UI"),
-  # Turno
-#      uiOutput("turno_UI"),
-  
-  # Botao 'atualizar'
-  
-      actionButton("button", 
-                   label = strong("Atualizar"), 
-                   class = "btn-primary btn-block"),
-  
-  # Botao 'download'
-  
-        conditionalPanel(
-        condition = 'input.button > 0',
-        downloadButton('downloadMap', 
-                       class="btn btn-success btn-block mt-10", 
-                       label = "Download")
-      )
+             useShinyalert(),
+             h4("Opções:"),
+             selectizeInput(
+               "estado",
+               label = NULL,
+               selected = NULL,
+               choices = c("", "São Paulo","Rio de Janeiro"),
+               options = list(
+                 placeholder = "Selecione um Estado"
+               )
+             ),
+             uiOutput("mun_UI"),
+             selectizeInput(
+               "ano",
+               label = NULL,
+               selected = 2016,
+               choices = c("", seq(2006, 2016, 2)),
+               options = list(
+                 placeholder = "Selecione um ano"
+               )
+             ),
+             uiOutput("cargo_UI"),
+             # Turno
+             #      uiOutput("turno_UI"),
+             
+             # Botao 'atualizar'
+             
+             actionButton("button", 
+                          label = strong("Atualizar"), 
+                          class = "btn-primary btn-block"),
+             
+             # Botao 'download'
+             
+             conditionalPanel(
+               condition = 'input.button > 0',
+               downloadButton('downloadMap', 
+                              class="btn btn-success btn-block mt-10", 
+                              label = "Download")
+             )
     )
   )
   
 }
 
-  # Mapa
+# Mapa
 
 mapTabPanelUi <- function () {
   return(tabPanel(
@@ -83,7 +73,7 @@ mapTabPanelUi <- function () {
                     height = "100%")
     ),
     
-  # Controles do mapa
+    # Controles do mapa
     
     absolutePanel(
       draggable = FALSE,
@@ -96,7 +86,7 @@ mapTabPanelUi <- function () {
       actionButton("map_zoom_in", "+"),
       actionButton("map_zoom_out", "-")
     )
-   
+    
   ))
 }
 
@@ -131,7 +121,7 @@ spatial2Ui <- function () {
                  absolutePanel(id = "controls", class = "panel panel-primary", fixed = F,
                                draggable = F, top = 60, left = 10, right = "auto", bottom = "auto",
                                width = 260, height = "auto", sidebarPanelUi())
-    ))
+      ))
     
   )
 }
