@@ -30,6 +30,7 @@ sidebarPanelUi <- function () {
                options = list(
                  placeholder = "Selecione um Estado"
                )),
+               uiOutput("turno_UI"),
                uiOutput("ano_UI"),
              # Turno
              #      uiOutput("turno_UI"),

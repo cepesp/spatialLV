@@ -35,6 +35,23 @@ spatial2Server <- function(input, output, session) {
     )
     })
   
+  
+  output$turno_UI <- renderUI({
+    if(!(input$cargo %in% c(1,3,11))){
+      return(1)
+    } else {
+      selectizeInput(
+        "turno",
+        label = NULL,
+        selected = 1,
+        choices = c(1, 2),
+        options = list(
+          placeholder = "Selecione um Turno"
+        )  
+      )
+    }
+  })
+  
   output$ano_UI <- renderUI({
     if (input$cargo %in% c(11, 13)){
       anos <- c(2008, 2012, 2016)
@@ -70,7 +87,7 @@ spatial2Server <- function(input, output, session) {
     } else {
       municipio_fronteira <- mun_code()
       
-      }
+    }
     mun_shp <- readr::read_rds(paste0("data/output/shape_municipios/", municipio_fronteira,".rds"))
     
   })
@@ -84,16 +101,20 @@ spatial2Server <- function(input, output, session) {
     return(text)
   }
   
-  ### Abrir dados do ano_mun
-  dados_ano_mun_cargo_turno <- eventReactive(input$button,{
+  ano_mun_cargo_turno <- reactive({
     ano <- input$ano
     cargo <- input$cargo
-    turno <- 1
+    turno <- input$turno
     ano_mun_cargo_turno <- paste(ano,mun_code(), cargo, turno, sep="_")
     #ano_mun_cargo_turno <- paste(ano,mun_code, cargo, turno, sep="_")
-    
-    dados_ano_mun_cargo_turno <- readr::read_rds(paste0("data/output/Prepared_Ano_Mun/", ano_mun_cargo_turno,".rds"))
+  })
+  
+  ### Abrir dados do ano_mun
+  dados_ano_mun_cargo_turno <- eventReactive(input$button,{
+    cat(paste0("data/output/Prepared_Ano_Mun/", ano_mun_cargo_turno(),".rds"))
+    dados_ano_mun_cargo_turno <- readr::read_rds(paste0("data/output/Prepared_Ano_Mun/", ano_mun_cargo_turno(),".rds"))
     cat("Data opened")
+    
     
     if (input$cargo %in% c(5, 6, 7, 13)){
       dados_ano_mun_cargo_turno <- dados_ano_mun_cargo_turno %>% 
