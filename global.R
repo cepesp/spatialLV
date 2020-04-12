@@ -44,9 +44,15 @@ party_colours <- tibble(NUM_VOTAVEL=factor(c(10, 11, 12, 13, 14, 15,
   mutate(Low_Colour=tinter(High_Colour, direction="tints", steps=10)[3],
          palette=list(c(Low_Colour, High_Colour)))
 
+#party_palettes <- party_colours %>% 
+#  dplyr::select(palette) %>%
+#  pmap(colorNumeric, domain=c(0,100)) %>%
+#  setNames(party_colours$NUM_VOTAVEL)
+
+#With null domain for flexibility to values
 party_palettes <- party_colours %>% 
   dplyr::select(palette) %>%
-  pmap(colorNumeric, domain=c(0,100)) %>%
+  pmap(colorNumeric, domain=NULL) %>%
   setNames(party_colours$NUM_VOTAVEL)
 
 party_colours_discrete <- party_colours %>% 

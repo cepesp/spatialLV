@@ -32,6 +32,7 @@ sidebarPanelUi <- function () {
                )),
                uiOutput("turno_UI"),
                uiOutput("ano_UI"),
+               uiOutput("partido_UI"),
              # Turno
              #      uiOutput("turno_UI"),
              
