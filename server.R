@@ -12,7 +12,8 @@ source("global.R")
 spatial2Server <- function(input, output, session) {
   
   
-  muns_escolhas <- reactive({
+  
+   muns_escolhas <- reactive({
     muns_escolhas <- IBGE_Muns %>% 
       filter(UF == input$estado) %>% 
       pull(NOME_MUNICIPIO)
@@ -112,8 +113,11 @@ spatial2Server <- function(input, output, session) {
         mun_code <- IBGE_Muns %>% 
           filter(NOME_MUNICIPIO == input$mun_UI) %>%
           pull(COD_MUN_IBGE) #Need to add state filter as well here
-      }
-      else if(input$mun_UI == ""){
+      } else if(input$estado == "São Paulo"){
+        mun_code <- "SP"
+      } else if(input$estado == "Rio de Janeiro"){
+        mun_code <- "RJ"
+      } else if(input$mun_UI == ""){
         mun_code <- NULL
       }
       return(mun_code)
@@ -151,11 +155,13 @@ spatial2Server <- function(input, output, session) {
   
   ### Abrir dados do ano_mun
   
+  
   dados_ano_mun_cargo_turno <- reactive({
     
    
     dados_ano_mun_cargo_turno <- readr::read_rds(paste0("data/output/Prepared_Ano_Mun/", 
                                                         ano_mun_cargo_turno(),".rds"))
+    
     cat("Data opened")
     
     if (input$cargo %in% c(5, 6, 7, 13)){
@@ -249,17 +255,17 @@ spatial2Server <- function(input, output, session) {
   
   
   output$map <- renderLeaflet({
+    
     geo <- as.numeric(st_bbox(mun_shp()))
     
-    
     leaflet(options = leafletOptions(zoomControl = FALSE)) %>%
+      clearShapes() %>% 
+      clearControls() %>% 
       addPolygons(data= mun_shp(), 
                   fillOpacity = 0, 
                   weight=2, 
                   color="black") %>% 
-      addProviderTiles(providers$CartoDB.Positron)%>% 
-      flyToBounds(geo[3], geo[4], geo[1], geo[2], 
-                  options=list(duration=1.5)) 
+      addProviderTiles(providers$CartoDB.Positron)
     
        })
   
@@ -282,6 +288,8 @@ spatial2Server <- function(input, output, session) {
   
   
   observeEvent(input$button,{
+    
+    geo <- as.numeric(st_bbox(mun_shp()))
     
     for(party in parties()){
       leafletProxy("map", data=dados_to_map()) %>%
@@ -314,8 +322,7 @@ spatial2Server <- function(input, output, session) {
                       colors = c("grey", "grey", "grey"), 
                       labels = c("100", "1000", "10000"), 
                       sizes = c(log(100/2), log(1000/2), log(10000/2)))
-    
-                 })
+    })
   
   ### Controles de zoom   
   

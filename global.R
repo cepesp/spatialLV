@@ -67,4 +67,10 @@ party_palette_discrete <- colorFactor(palette=party_colours$High_Colour,
                                       levels=party_colours$NUM_VOTAVEL)
 
 
-
+foo <- function() {
+  message("one message")
+  Sys.sleep(1)
+  message("two messages")
+  Sys.sleep(1)
+  warning("...and a warning")
+}
