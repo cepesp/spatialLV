@@ -15,7 +15,7 @@ spatial2Server <- function(input, output, session) {
   
    muns_escolhas <- reactive({
     muns_escolhas <- IBGE_Muns %>% 
-      filter(UF == input$estado) %>% 
+      filter(SIGLA_UF == input$estado) %>% 
       pull(NOME_MUNICIPIO)
     return(muns_escolhas)
   })
