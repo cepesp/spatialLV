@@ -313,7 +313,7 @@ spatial2Server <- function(input, output, session) {
                 opacity = 1) %>%
       addLegend(position = "topright",
                 pal = colorNumeric(c(tinter("#525252",direction="tints",steps=10)[3],"#525252"), 
-                                   domain=c(0,100)),
+                                   domain=NULL),
                 values=~Pct_Votos_LV,
                 title="Proporção do Voto",
                 opacity=1
