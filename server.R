@@ -8,13 +8,13 @@ library(stringr)
 
 source("global.R")
 
-#input <- tibble(cargo=6,ano=2014,turno=1,estado="São Paulo",mun="Adolfo", partido_UI=17)
-#input <- tibble(cargo=1,ano=2010,turno=1,estado="Rio de Janeiro",mun="Rio de Janeiro")
 
 spatial2Server <- function(input, output, session) {
   
+  
   muns_escolhas <- reactive({
-    muns_escolhas <- IBGE_Muns %>% filter(UF==input$estado) %>% 
+    muns_escolhas <- IBGE_Muns %>% 
+      filter(UF == input$estado) %>% 
       pull(NOME_MUNICIPIO)
     return(muns_escolhas)
   })
@@ -25,7 +25,7 @@ spatial2Server <- function(input, output, session) {
       return(NULL)
     }
     selectizeInput(
-      "mun",
+      inputId = "mun_UI",
       label = NULL,
       selected = NULL,
       choices = c("", muns_escolhas()),
@@ -41,7 +41,7 @@ spatial2Server <- function(input, output, session) {
       return(1)
     } else {
       selectizeInput(
-        "turno",
+        inputId = "turno_UI",
         label = NULL,
         selected = 1,
         choices = c(1, 2),
@@ -59,7 +59,7 @@ spatial2Server <- function(input, output, session) {
       anos <- c(2006, 2010, 2014, 2018)
     )
     sliderInput(
-      "ano",
+      inputId = "ano_UI",
       label = NULL,
       min=min(anos), 
       max=max(anos),
@@ -75,16 +75,17 @@ spatial2Server <- function(input, output, session) {
   partidos_escolhas <- reactive({
     cat("Parsing partidos_escolhas\n")
     
-    if(input$mun == ""){
-      cat("Parsing partidos_escolhas. NULL\n")
-      return(NULL)
-    }    
+    if(shiny::req(input$mun_UI) > 0){    
     
-    choices <- dados_ano_mun_cargo_turno()  %>%
+    choices <- dados_ano_mun_cargo_turno()%>%
       pull(NUM_VOTAVEL)
     choices <- c("Partido Mais Votado no LV", unique(sort(choices)))
     cat("Parsing partidos_escolhas. CHECK!!!\n")
     return(choices)
+    } else if(shiny::req(input$mun_UI) == ""){
+      cat("Parsing partidos_escolhas. NULL\n")
+      return(NULL)
+    }
   }) 
   
   output$partido_UI <- renderUI({
@@ -99,18 +100,21 @@ spatial2Server <- function(input, output, session) {
                          label = NULL,
                          choices = partidos,
                          selected = NULL,
-                         options  = list(placeholder = 'Escolha um partido:',allowEmptyOption=TRUE))
+                         options  = list(placeholder = 'Escolha um partido:',
+                                         allowEmptyOption=TRUE))
     cat("Outputing party_UI. CHECK!!!\n")
     return(UI)
   })
   
   
     mun_code <- reactive({
-      if (input$mun==""){
-        mun_code <- NULL
-      } else {
-        mun_code <- IBGE_Muns %>% filter(NOME_MUNICIPIO==input$mun) %>%
+      if(input$mun_UI > 0){
+        mun_code <- IBGE_Muns %>% 
+          filter(NOME_MUNICIPIO == input$mun_UI) %>%
           pull(COD_MUN_IBGE) #Need to add state filter as well here
+      }
+      else if(input$mun_UI == ""){
+        mun_code <- NULL
       }
       return(mun_code)
     })
@@ -124,7 +128,8 @@ spatial2Server <- function(input, output, session) {
       municipio_fronteira <- mun_code()
       
     }
-    mun_shp <- readr::read_rds(paste0("data/output/shape_municipios/", municipio_fronteira,".rds"))
+    mun_shp <- readr::read_rds(paste0("data/output/shape_municipios/", 
+                                      municipio_fronteira,".rds"))
     
   })
   
@@ -138,17 +143,19 @@ spatial2Server <- function(input, output, session) {
   }
   
   ano_mun_cargo_turno <- reactive({
-    ano <- input$ano
+    ano <- input$ano_UI
     cargo <- input$cargo
-    turno <- input$turno
-    ano_mun_cargo_turno <- paste(ano,mun_code(), cargo, turno, sep="_")
-    #ano_mun_cargo_turno <- paste(ano,mun_code, cargo, turno, sep="_")
+    turno <- input$turno_UI
+    ano_mun_cargo_turno <- paste(ano, mun_code(), cargo, turno, sep="_")
   })
   
   ### Abrir dados do ano_mun
-  dados_ano_mun_cargo_turno <- eventReactive(input$button,{
-    #cat(paste0("data/output/Prepared_Ano_Mun/", ano_mun_cargo_turno(),".rds"))
-    dados_ano_mun_cargo_turno <- readr::read_rds(paste0("data/output/Prepared_Ano_Mun/", ano_mun_cargo_turno(),".rds"))
+  
+  dados_ano_mun_cargo_turno <- reactive({
+    
+   
+    dados_ano_mun_cargo_turno <- readr::read_rds(paste0("data/output/Prepared_Ano_Mun/", 
+                                                        ano_mun_cargo_turno(),".rds"))
     cat("Data opened")
     
     if (input$cargo %in% c(5, 6, 7, 13)){
@@ -159,9 +166,12 @@ spatial2Server <- function(input, output, session) {
                   Pct_Votos_LV=sum(Pct_Votos_LV,na.rm=T))
     }
     
+   
     dados_ano_mun_cargo_turno_other_parties <- dados_ano_mun_cargo_turno %>% 
       dplyr::select(-QTDE_VOTOS) %>% 
-      pivot_wider(names_from="NUM_VOTAVEL", values_from="Pct_Votos_LV", values_fill=list(Pct_Votos_LV=0)) %>%
+      pivot_wider(names_from="NUM_VOTAVEL", 
+                  values_from="Pct_Votos_LV", 
+                  values_fill=list(Pct_Votos_LV=0)) %>%
       rowwise() %>%
       do(row = as_data_frame(.)) %>%
       mutate(Other_Parties=form_parties_text(row)) %>%
@@ -236,8 +246,11 @@ spatial2Server <- function(input, output, session) {
   
   # Base do mapa
   
+  
+  
   output$map <- renderLeaflet({
     geo <- as.numeric(st_bbox(mun_shp()))
+    
     
     leaflet(options = leafletOptions(zoomControl = FALSE)) %>%
       addPolygons(data= mun_shp(), 
@@ -246,31 +259,33 @@ spatial2Server <- function(input, output, session) {
                   color="black") %>% 
       addProviderTiles(providers$CartoDB.Positron)%>% 
       flyToBounds(geo[3], geo[4], geo[1], geo[2], 
-                  options=list(duration=1.5))
+                  options=list(duration=1.5)) 
     
-    #        leaflet(options = leafletOptions(zoomControl = FALSE)) %>% 
-    #              addProviderTiles(providers$CartoDB.Positron)
-    
-  })
+       })
   
   
   # Distribuicao de votos nos locais de votacao
   
-  addLegendCustom <- function(map, colors, labels, sizes, opacity = 0.5){
-    colorAdditions <- paste0(colors, "; border-radius: 50%; width:", sizes, "px; height:", sizes, "px")
-    labelAdditions <- paste0("<div style='display: inline-block;height: ", sizes, "px;margin-top: 4px;line-height: ", sizes, "px;'>", labels, "</div>")
+  addLegendCustom <- function(map, colors, 
+                              labels, sizes, opacity = 0.5){
+    colorAdditions <- paste0(colors, "; border-radius: 50%; width:", sizes, 
+                             "px; height:", sizes, "px")
+    labelAdditions <- paste0("<div style='display: inline-block;height: ", 
+                             sizes, "px;margin-top: 4px;line-height: ", sizes, 
+                             "px;'>", labels, "</div>")
     
-    return(addLegend(map, colors = colorAdditions, labels = labelAdditions, opacity = opacity))
+    return(addLegend(map,
+                     colors = colorAdditions, 
+                     labels = labelAdditions, 
+                     opacity = opacity))
   }
   
   
   observeEvent(input$button,{
-    leafletProxy("map", data=dados_to_map()) %>%
-      clearControls() %>% 
-      clearMarkers()
     
     for(party in parties()){
       leafletProxy("map", data=dados_to_map()) %>%
+        clearControls() %>% 
         addCircleMarkers(data = dados_to_map() %>% 
                            dplyr::filter(NUM_VOTAVEL == party), 
                          stroke = F,
@@ -283,22 +298,24 @@ spatial2Server <- function(input, output, session) {
                                        Other_Parties),
                          fillColor = ~party_palettes[[as.character(party)]](Pct_Votos_LV))} %>%   
       
-      addLegend("topright", 
+      addLegend(position = "topright", 
                 pal = party_palette_discrete,
                 values = ~parties_legend()$NUM_VOTAVEL,
                 title = "Partidos",
                 opacity = 1) %>%
-      addLegend("bottomleft",
+      addLegend(position = "topright",
                 pal = colorNumeric(c(tinter("#525252",direction="tints",steps=10)[3],"#525252"), 
                                    domain=c(0,100)),
                 values=~Pct_Votos_LV,
                 title="Proporção do Voto",
                 opacity=1
       ) %>%
-      addLegendCustom(colors = c("grey", "grey", "grey"), 
+      addLegendCustom(
+                      colors = c("grey", "grey", "grey"), 
                       labels = c("100", "1000", "10000"), 
                       sizes = c(log(100/2), log(1000/2), log(10000/2)))
-  })
+    
+                 })
   
   ### Controles de zoom   
   

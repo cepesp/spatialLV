@@ -26,15 +26,16 @@ sidebarPanelUi <- function () {
                "cargo",
                label = NULL,
                selected = NULL,
-               choices = list("Presidente"=1, "Governador"=3, "Senador"=5, "Deputado Federal"=6, "Deptuado Estadual"=7, "Prefeito"=11, "Vereador"=13),
+               choices = list("Presidente"=1, "Governador"=3, 
+                              "Senador"=5, "Deputado Federal"=6, 
+                              "Deptuado Estadual"=7, "Prefeito"=11, 
+                              "Vereador"=13),
                options = list(
                  placeholder = "Selecione um Estado"
                )),
                uiOutput("turno_UI"),
                uiOutput("ano_UI"),
                uiOutput("partido_UI"),
-             # Turno
-             #      uiOutput("turno_UI"),
              
              # Botao 'atualizar'
              
@@ -67,14 +68,17 @@ mapTabPanelUi <- function () {
                  ".shiny-output-error:before { visibility: hidden; }",
                  "#controlPanel {background-color: rgba(255,255,255,0.8);}",
                  ".leaflet-top.leaflet-right .leaflet-control {
-      margin-right: 10px; margin-top: 250px;
+      margin-right: 10px;
     }"),
+      
+      
       leafletOutput("map", 
                     width = "100%", 
                     height = "100%")
     ),
     
     # Controles do mapa
+    
     
     absolutePanel(
       draggable = FALSE,
@@ -98,26 +102,51 @@ aboutTabPanelUi <- function () {
     tabPanel("Sobre",
              column(width = 3, ""),
              column(
-               width = 8, h4("Sobre CepespMapas"), htmlOutput("Note")
+               width = 8, h4("Sobre CepespMapas"), 
+               htmlOutput("Note")
              ))
   )
 }
 
 # ROOT UI COMPONENT
 spatial2Ui <- function () {
+  
+ 
   return (
     
     tagList(
       
-      tags$head(includeCSS("styles.css")),
+      tags$head(includeCSS("styles.css"),
+                
+                tags$style(HTML("
+                
+                .leaflet-top {
+                 top: 100px;
+                 }
+                
+                .leaflet-top.leaflet-right .leaflet-control{
+                 margin-top: 10px;
+                }"
+                ))),
+        
       tags$div(class = "btn-header", checked = NA,
-               tags$a(href = "http://cepespdata.io/", class="btn btn-primary", "Ir para CepespData")),
+               tags$a(href = "http://cepespdata.io/", 
+                      class="btn btn-primary", 
+                      "Ir para CepespData")),
       
       
-      navbarPage("Spatial Maps", theme = shinytheme("lumen"), collapsible = TRUE, fluid = TRUE,
+      navbarPage("Spatial Maps", 
+                 theme = shinytheme("lumen"), 
+                 collapsible = TRUE, 
+                 fluid = TRUE,
                  
                  mapTabPanelUi(),
                  aboutTabPanelUi(),
+                 
+                 add_busy_spinner(spin = "fulfilling-bouncing-circle",
+                                  position = "top-right",
+                                  margins = c(300, 650)
+                                  ),
                  
                  absolutePanel(id = "controls", class = "panel panel-primary", fixed = F,
                                draggable = F, top = 60, left = 10, right = "auto", bottom = "auto",

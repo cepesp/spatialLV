@@ -3,6 +3,7 @@ library(dplyr)
 library(tinter)
 library(purrr)
 library(leaflet)
+library(shinybusy)
 
 ### Carrega os bancos de dados
 IBGE_Muns <- readr::read_rds("data/input/IBGE_muns.rds") #%>%
@@ -64,4 +65,6 @@ party_colours_discrete <- party_colours %>%
 
 party_palette_discrete <- colorFactor(palette=party_colours$High_Colour, 
                                       levels=party_colours$NUM_VOTAVEL)
+
+
 
