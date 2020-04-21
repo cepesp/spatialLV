@@ -5,6 +5,7 @@ library(purrr)
 library(leaflet)
 library(shinybusy)
 
+
 ### Carrega os bancos de dados
 IBGE_Muns <- readr::read_rds("data/input/IBGE_muns.rds") #%>%
   #filter(UF=="São Paulo" | COD_MUN_IBGE==3304557)

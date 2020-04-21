@@ -108,15 +108,16 @@ spatial2Server <- function(input, output, session) {
   })
   
   
+ 
     mun_code <- reactive({
-      if(input$mun_UI > 0){
+     
+      if(input$estado > 0 &
+         input$mun_UI == ""){
+       mun_code <- input$estado
+      } else if(input$mun_UI > 0){
         mun_code <- IBGE_Muns %>% 
           filter(NOME_MUNICIPIO == input$mun_UI) %>%
           pull(COD_MUN_IBGE) #Need to add state filter as well here
-      } else if(input$estado == "São Paulo"){
-        mun_code <- "SP"
-      } else if(input$estado == "Rio de Janeiro"){
-        mun_code <- "RJ"
       } else if(input$mun_UI == ""){
         mun_code <- NULL
       }
@@ -321,7 +322,9 @@ spatial2Server <- function(input, output, session) {
       addLegendCustom(
                       colors = c("grey", "grey", "grey"), 
                       labels = c("100", "1000", "10000"), 
-                      sizes = c(log(100/2), log(1000/2), log(10000/2)))
+                      sizes = c(log(100/2), log(1000/2), log(10000/2))) %>% 
+      flyToBounds(geo[3], geo[4], geo[1], geo[2],
+                  options=list(duration=0.1))
     })
   
   ### Controles de zoom   
