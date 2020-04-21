@@ -60,4 +60,18 @@ readr::write_rds(br, paste0("data/output/shape_municipios/br.rds"))
 
 length(list.files("data/output/shape_municipios/"))
 
+## Arruma o shape do Espirito Santo e de Vitoria
 
+ES <- readr::read_rds("data/output/shape_municipios/ES.rds")
+
+ES <- ms_filter_islands(ES, min_area = 12391399903)
+
+vitoria <- readr::read_rds("data/output/shape_municipios/3205309.rds")
+
+vitoria <- ms_filter_islands(vitoria, min_area = 12391399)
+
+## Salva o novo shape
+
+readr::write_rds(ES, paste0("data/output/shape_municipios/ES.rds"))
+
+readr::write_rds(vitoria, paste0("data/output/shape_municipios/3205309.rds"))
