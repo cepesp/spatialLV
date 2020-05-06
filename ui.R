@@ -163,7 +163,7 @@ spatial2Ui <- function () {
                       "Ir para CepespData")),
       
       
-      navbarPage("Spatial Maps", 
+      navbarPage("Eleições por Local de Votação", 
                  theme = shinytheme("lumen"), 
                  collapsible = TRUE, 
                  fluid = TRUE,
