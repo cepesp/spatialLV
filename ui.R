@@ -25,7 +25,7 @@ sidebarPanelUi <- function () {
                            "Ceará"="CE",
                            "Distrito Federal"="DF",
                            "Espirito Santo"="ES",
-                           "Goiás"="Go",
+                           "Goiás"="GO",
                            "Maranhão"="MA",
                            "Mato Grosso"="MT",
                            "Mato Grosso do Sul"="MS",

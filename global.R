@@ -5,6 +5,7 @@ library(purrr)
 library(leaflet)
 library(shinybusy)
 
+
 ### Carrega os bancos de dados
 IBGE_Muns <- readr::read_rds("data/input/IBGE_muns.rds") #%>%
   #filter(UF=="São Paulo" | COD_MUN_IBGE==3304557)
@@ -67,10 +68,3 @@ party_palette_discrete <- colorFactor(palette=party_colours$High_Colour,
                                       levels=party_colours$NUM_VOTAVEL)
 
 
-foo <- function() {
-  message("one message")
-  Sys.sleep(1)
-  message("two messages")
-  Sys.sleep(1)
-  warning("...and a warning")
-}
