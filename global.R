@@ -7,7 +7,7 @@ library(shinybusy)
 
 
 ### Carrega os bancos de dados
-IBGE_Muns <- readr::read_rds("data/input/IBGE_muns.rds") #%>%
+IBGE_Muns <- readr::read_rds("data/input/IBGE_Muns.rds") #%>%
   #filter(UF=="São Paulo" | COD_MUN_IBGE==3304557)
 
 ### Cria as paletas de cores
