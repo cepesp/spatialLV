@@ -140,7 +140,8 @@ spatial2Server <- function(input, output, session) {
   form_parties_text <- function(df){
     parties <- colnames(df)[-1:-4]
     text <- c()
-    for (i in parties){
+    #for (i in parties){
+    for (i in parties[1:2]){
       text <- paste0(text, i, ": ",round(df[,i],1),"% <br>")
     }
     return(text)
