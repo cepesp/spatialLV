@@ -10,6 +10,9 @@ library(shinybusy)
 IBGE_Muns <- readr::read_rds("data/input/IBGE_Muns.rds") #%>%
   #filter(UF=="São Paulo" | COD_MUN_IBGE==3304557)
 
+siglas_partidos <- read_delim("data/input/siglas_partidos.csv", 
+                              ";", escape_double = FALSE, trim_ws = TRUE)
+
 ### Cria as paletas de cores
 #https://pt.wikipedia.org/wiki/Predefini%C3%A7%C3%A3o:Cor_de_partido_pol%C3%ADtico/BRA
 
