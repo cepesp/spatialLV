@@ -1,116 +1,4 @@
-﻿Ano;Sigla do partido;Número do partido;Nome do partido
-1982;PDS;11;Partido Democrático Social
-1982;PDT;12;Partido Democrático Trabalhista
-1982;PT;13;Partido dos Trabalhadores
-1982;PTB;14;Partido Trabalhista Brasileiro
-1982;PMDB;15;Partido do Movimento Democrático Brasileiro
-1986;PDS;11;Partido Democrático Social
-1986;PDT;12;Partido Democrático Trabalhista
-1986;PT;13;Partido dos Trabalhadores
-1986;PTB;14;Partido Trabalhista Brasileiro
-1986;PMDB;15;Partido do Movimento Democrático Brasileiro
-1986;PPB;16;Partido do Povo Brasileiro
-1986;PDC;17;Partido Democrata Cristão
-1986;PMC;18;Partido Municipalista Comunitário
-1986;PH;19;Partido Humanista
-1986;PSC;20;Partido Social Cristão
-1986;PTN;21;Partido Tancredista Nacional
-1986;PL;22;Partido Liberal
-1986;PCB;23;Partido Comunista Brasileiro
-1986;PFL;25;Partido da Frente Liberal
-1986;PMB;26;Partido Municipalista Brasileiro
-1986;PN;27;Partido Nacionalista
-1986;PTR;28;Partido Trabalhista Renovador
-1986;PASART;30;Partido Socialista Agrário Renovador Trabalhista
-1986;PCN;31;Partido Comunitário Nacional
-1986;PNR;32;Partido da Nova República
-1986;PMN;33;Partido da Mobilização Nacional
-1986;PS;34;Partido Socialista
-1986;PRT;35;Partido Reformador Trabalhista
-1986;PJ;36;Partido da Juventude
-1986;PND;37;Partido Nacionalista Democrático
-1986;PRP;38;Partido Renovador Progressista
-1986;PDI;39;Partido Democrático Independente
-1986;PSB;40;Partido Socialista Brasileiro
-1986;PCdoB;65;Partido Comunista do Brasil
-1989;PDS;11;Partido Democrático Social
-1989;PDT;12;Partido Democrático Trabalhista
-1989;PT;13;Partido dos Trabalhadores
-1989;PTB;14;Partido Trabalhista Brasileiro
-1989;PMDB;15;Partido do Movimento Democrático Brasileiro
-1989;PPB;16;Partido do Povo Brasileiro
-1989;PL;22;Partido Liberal
-1989;PCB;23;Partido Comunista Brasileiro
-1989;PFL;25;Partido da Frente Liberal
-1989;PN;27;Partido Nacionalista
-1989;PCN;31;Partido Comunitário Nacional
-1989;PMN;33;Partido da Mobilização Nacional
-1989;PRN;36;Partido da Reconstrução Nacional
-1989;PSD;41;Partido Social Democrático
-1989;PSP;42;Partido Social Progressista
-1989;PV;43;Partido Verde
-1989;PSDB;45;Partido da Social Democracia Brasileira
-1989;PP;54;Partido do Povo
-1989;PLP;55;Partido Liberal Progressista
-1989;PRONA;56;Partido de Reedificação da Ordem Nacional
-1989;PDCdoB;57;Partido Democrata Cristão do Brasil
-1990;PDS;11;Partido Democrático Social
-1990;PDT;12;Partido Democrático Trabalhista
-1990;PT;13;Partido dos Trabalhadores
-1990;PTB;14;Partido Trabalhista Brasileiro
-1990;PMDB;15;Partido do Movimento Democrático Brasileiro
-1990;PDC;17;Partido Democrata Cristão
-1990;PSC;20;Partido Social Cristão
-1990;PL;22;Partido Liberal
-1990;PCB;23;Partido Comunista Brasileiro
-1990;PFL;25;Partido da Frente Liberal
-1990;PTR;28;Partido Trabalhista Renovador
-1990;PCN;31;Partido Comunitário Nacional
-1990;PMN;33;Partido da Mobilização Nacional
-1990;PS;34;Partido Socialista
-1990;PRN;36;Partido da Reconstrução Nacional
-1990;PSB;40;Partido Socialista Brasileiro
-1990;PSD;41;Partido Social Democrático
-1990;PRP;44;Partido Republicano Progressista
-1990;PSDB;45;Partido da Social Democracia Brasileira
-1990;PNAB;47;Partido Nacional dos Aposentados no Brasil
-1990;PST;52;Partido Social Trabalhista
-1990;PRONA;56;Partido de Reedificação da Ordem Nacional
-1990;PSL;59;Partido do Solidarismo Libertador
-1990;PBM;61;Partido Brasileiro de Mulheres
-1990;PEB;62;Partido Estudantil Brasileiro
-1990;PSU;63;Partido Socialista Unido
-1990;PAP;64;Partido de Ação Progressista
-1990;PCdoB;65;Partido Comunista do Brasil
-1990;PNT;67;Partido Nacionalista dos Trabalhadores
-1990;PD;68;Partido Democrata
-1990;PLH;69;Partido Liberal Humanista
-1990;PTdoB;70;Partido Trabalhista do Brasil
-1990;PRS;71;Partido das Reformas Sociais
-1990;PAS;72;Partido de Ação Social
-1994;PPR;11;Partido Progressista Reformador
-1994;PDT;12;Partido Democrático Trabalhista
-1994;PT;13;Partido dos Trabalhadores
-1994;PTB;14;Partido Trabalhista Brasileiro
-1994;PMDB;15;Partido do Movimento Democrático Brasileiro
-1994;PSTU;16;Partido Socialista dos Trabalhadores Unificados
-1994;PTRB;17;Partido Trabalhista Renovador Brasileiro
-1994;PSC;20;Partido Social Cristão
-1994;PCB;21;Partido Comunista Brasileiro
-1994;PL;22;Partido Liberal
-1994;PPS;23;Partido Popular Socialista
-1994;PFL;25;Partido da Frente Liberal
-1994;PMN;33;Partido da Mobilização Nacional
-1994;PRN;36;Partido da Reconstrução Nacional
-1994;PP;39;Partido Progressista
-1994;PSB;40;Partido Socialista Brasileiro
-1994;PSD;41;Partido Social Democrático
-1994;PV;43;Partido Verde
-1994;PRP;44;Partido Republicano Progressista
-1994;PSDB;45;Partido da Social Democracia Brasileira
-1994;PRONA;56;Partido de Reedificação da Ordem Nacional
-1994;PCdoB;65;Partido Comunista do Brasil
-1994;PTdoB;70;Partido Trabalhista do Brasil
+﻿ANO_ELEICAO;SIGLA_PARTIDO;NUM_VOTAVEL;NOME_PARTIDO
 1998;PPB;11;Partido Progressista Brasileiro
 1998;PDT;12;Partido Democrático Trabalhista
 1998;PT;13;Partido dos Trabalhadores
@@ -141,6 +29,36 @@
 1998;PRONA;56;Partido de Reedificação da Ordem Nacional
 1998;PCdoB;65;Partido Comunista do Brasil
 1998;PTdoB;70;Partido Trabalhista do Brasil
+2000;PPB;11;Partido Progressista Brasileiro
+2000;PDT;12;Partido Democrático Trabalhista
+2000;PT;13;Partido dos Trabalhadores
+2000;PTB;14;Partido Trabalhista Brasileiro
+2000;PMDB;15;Partido do Movimento Democrático Brasileiro
+2000;PSTU;16;Partido Socialista dos Trabalhadores Unificados
+2000;PSL;17;Partido Social Liberal
+2000;PST;18;Partido Social Trabalhista
+2000;PTN;19;Partido Trabalhista Nacional
+2000;PSC;20;Partido Social Cristão
+2000;PCB;21;Partido Comunista Brasileiro
+2000;PL;22;Partido Liberal
+2000;PPS;23;Partido Popular Socialista
+2000;PFL;25;Partido da Frente Liberal
+2000;PAN;26;Partidos dos Aposentados da Nação
+2000;PSDC;27;Partido Social Democrata Cristão
+2000;PRTB;28;Partido Renovador Trabalhista Brasileiro
+2000;PCO;29;Partido da Causa Operária
+2000;PGT;30;Partido Geral dos Trabalhadores
+2000;PSN;31;Partido Solidarista Nacional
+2000;PMN;33;Partido da Mobilização Nacional
+2000;PRN;36;Partido da Reconstrução Nacional
+2000;PSB;40;Partido Socialista Brasileiro
+2000;PSD;41;Partido Social Democrático
+2000;PV;43;Partido Verde
+2000;PRP;44;Partido Republicano Progressista
+2000;PSDB;45;Partido da Social Democracia Brasileira
+2000;PRONA;56;Partido de Reedificação da Ordem Nacional
+2000;PCdoB;65;Partido Comunista do Brasil
+2000;PTdoB;70;Partido Trabalhista do Brasil
 2002;PPB;11;Partido Progressista Brasileiro
 2002;PDT;12;Partido Democrático Trabalhista
 2002;PT;13;Partido dos Trabalhadores
@@ -171,6 +89,35 @@
 2002;PRONA;56;Partido de Reedificação da Ordem Nacional
 2002;PCdoB;65;Partido Comunista do Brasil
 2002;PTdoB;70;Partido Trabalhista do Brasil
+2004;PPB;11;Partido Progressista Brasileiro
+2004;PDT;12;Partido Democrático Trabalhista
+2004;PT;13;Partido dos Trabalhadores
+2004;PTB;14;Partido Trabalhista Brasileiro
+2004;PMDB;15;Partido do Movimento Democrático Brasileiro
+2004;PSTU;16;Partido Socialista dos Trabalhadores Unificados
+2004;PSL;17;Partido Social Liberal
+2004;PTN;19;Partido Trabalhista Nacional
+2004;PSC;20;Partido Social Cristão
+2004;PCB;21;Partido Comunista Brasileiro
+2004;PL;22;Partido Liberal
+2004;PPS;23;Partido Popular Socialista
+2004;PFL;25;Partido da Frente Liberal
+2004;PAN;26;Partidos dos Aposentados da Nação
+2004;PSDC;27;Partido Social Democrata Cristão
+2004;PRTB;28;Partido Renovador Trabalhista Brasileiro
+2004;PCO;29;Partido da Causa Operária
+2004;PGT;30;Partido Geral dos Trabalhadores
+2004;PHS;31;Partido Humanista da Solidariedade
+2004;PMN;33;Partido da Mobilização Nacional
+2004;PTC;36;Partido Trabalhista Cristão
+2004;PSB;40;Partido Socialista Brasileiro
+2004;PSD;41;Partido Social Democrático
+2004;PV;43;Partido Verde
+2004;PRP;44;Partido Republicano Progressista
+2004;PSDB;45;Partido da Social Democracia Brasileira
+2004;PRONA;56;Partido de Reedificação da Ordem Nacional
+2004;PCdoB;65;Partido Comunista do Brasil
+2004;PTdoB;70;Partido Trabalhista do Brasil
 2006;PRB;10;Partido Republicano Brasileiro
 2006;PP;11;Partido Progressista 
 2006;PDT;12;Partido Democrático Trabalhista
@@ -200,6 +147,35 @@
 2006;PRONA;56;Partido de Reedificação da Ordem Nacional
 2006;PCdoB;65;Partido Comunista do Brasil
 2006;PTdoB;70;Partido Trabalhista do Brasil
+2008;PRB;10;Partido Republicano Brasileiro
+2008;PP;11;Partido Progressista 
+2008;PDT;12;Partido Democrático Trabalhista
+2008;PT;13;Partido dos Trabalhadores
+2008;PTB;14;Partido Trabalhista Brasileiro
+2008;PMDB;15;Partido do Movimento Democrático Brasileiro
+2008;PSTU;16;Partido Socialista dos Trabalhadores Unificados
+2008;PSL;17;Partido Social Liberal
+2008;PTN;19;Partido Trabalhista Nacional
+2008;PSC;20;Partido Social Cristão
+2008;PCB;21;Partido Comunista Brasileiro
+2008;PR;22;Partido da República
+2008;PPS;23;Partido Popular Socialista
+2008;PFL;25;Partido da Frente Liberal
+2008;PAN;26;Partidos dos Aposentados da Nação
+2008;PSDC;27;Partido Social Democrata Cristão
+2008;PRTB;28;Partido Renovador Trabalhista Brasileiro
+2008;PCO;29;Partido da Causa Operária
+2008;PHS;31;Partido Humanista da Solidariedade
+2008;PMN;33;Partido da Mobilização Nacional
+2008;PTC;36;Partido Trabalhista Cristão
+2008;PSB;40;Partido Socialista Brasileiro
+2008;PV;43;Partido Verde
+2008;PRP;44;Partido Republicano Progressista
+2008;PSDB;45;Partido da Social Democracia Brasileira
+2008;PSOL;50;Partido Socialismo e Liberdade
+2008;PRONA;56;Partido de Reedificação da Ordem Nacional
+2008;PCdoB;65;Partido Comunista do Brasil
+2008;PTdoB;70;Partido Trabalhista do Brasil
 2010;PRB;10;Partido Republicano Brasileiro
 2010;PP;11;Partido Progressista 
 2010;PDT;12;Partido Democrático Trabalhista
@@ -227,6 +203,33 @@
 2010;PSOL;50;Partido Socialismo e Liberdade
 2010;PCdoB;65;Partido Comunista do Brasil
 2010;PTdoB;70;Partido Trabalhista do Brasil
+2012;PRB;10;Partido Republicano Brasileiro
+2012;PP;11;Partido Progressista 
+2012;PDT;12;Partido Democrático Trabalhista
+2012;PT;13;Partido dos Trabalhadores
+2012;PTB;14;Partido Trabalhista Brasileiro
+2012;PMDB;15;Partido do Movimento Democrático Brasileiro
+2012;PSTU;16;Partido Socialista dos Trabalhadores Unificados
+2012;PSL;17;Partido Social Liberal
+2012;PTN;19;Partido Trabalhista Nacional
+2012;PSC;20;Partido Social Cristão
+2012;PCB;21;Partido Comunista Brasileiro
+2012;PR;22;Partido da República
+2012;PPS;23;Partido Popular Socialista
+2012;DEM;25;Democratas
+2012;PSDC;27;Partido Social Democrata Cristão
+2012;PRTB;28;Partido Renovador Trabalhista Brasileiro
+2012;PCO;29;Partido da Causa Operária
+2012;PHS;31;Partido Humanista da Solidariedade
+2012;PMN;33;Partido da Mobilização Nacional
+2012;PTC;36;Partido Trabalhista Cristão
+2012;PSB;40;Partido Socialista Brasileiro
+2012;PV;43;Partido Verde
+2012;PRP;44;Partido Republicano Progressista
+2012;PSDB;45;Partido da Social Democracia Brasileira
+2012;PSOL;50;Partido Socialismo e Liberdade
+2012;PCdoB;65;Partido Comunista do Brasil
+2012;PTdoB;70;Partido Trabalhista do Brasil
 2014;PRB;10;Partido Republicano Brasileiro
 2014;PP;11;Partido Progressista
 2014;PDT;12;Partido Democrático Trabalhista
@@ -259,6 +262,38 @@
 2014;PT do B;70;Partido Trabalhista do Brasil
 2014;SD;77;Solidariedade
 2014;PROS;90;Partido Republicano da Ordem Social
+2016;PRB;10;Partido Republicano Brasileiro
+2016;PP;11;Partido Progressista
+2016;PDT;12;Partido Democrático Trabalhista
+2016;PT;13;Partido dos Trabalhadores
+2016;PTB;14;Partido Trabalhista Brasileiro
+2016;PMDB;15;Partido do Movimento Democrático Brasileiro
+2016;PSTU;16;Partido Socialista dos Trabalhadores Unificado
+2016;PSL;17;Partido Social Liberal
+2016;PTN;19;Partido Trabalhista Nacional
+2016;PSC;20;Partido Social Cristão
+2016;PCB;21;Partido Comunista Brasileiro
+2016;PR;22;Partido da República
+2016;PPS;23;Partido Popular Socialista
+2016;DEM;25;Democratas
+2016;PSDC;27;Partido Social Democrata Cristão
+2016;PRTB;28;Partido Renovador Trabalhista Brasileiro
+2016;PCO;29;Partido da Causa Operária
+2016;PHS;31;Partido Humanista da Solidariedade
+2016;PMN;33;Partido da Mobilização Nacional
+2016;PTC;36;Partido Trabalhista Cristão
+2016;PSB;40;Partido Socialista Brasileiro
+2016;PV;43;Partido Verde
+2016;PRP;44;Partido Republicano Progressista
+2016;PSDB;45;Partido da Social Democracia Brasileira
+2016;PSOL;50;Partido Socialismo e Liberdade
+2016;PEN;51;Partido Ecológico Nacional
+2016;PPL;54;Partido Pátria Livre
+2016;PSD;55;Partido Social Democrático
+2016;PC do B;65;Partido Comunista do Brasil
+2016;PT do B;70;Partido Trabalhista do Brasil
+2016;SD;77;Solidariedade
+2016;PROS;90;Partido Republicano da Ordem Social
 2018;PRB;10;Partido Republicano Brasileiro
 2018;PP;11;Partido Progressista
 2018;PDT;12;Partido Democrático Trabalhista
@@ -267,6 +302,7 @@
 2018;MDB;15;Movimento Democrático Brasileiro
 2018;PSTU;16;Partido Socialista dos Trabalhadores Unificado
 2018;PSL;17;Partido Social Liberal
+2016;REDE;18;Rede Sustentabilidade
 2018;REDE;18;Rede Sustentabilidade
 2018;PODE;19;Podemos
 2018;PSC;20;Partido Social Cristão

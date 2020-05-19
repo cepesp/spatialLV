@@ -156,7 +156,7 @@ spatial2Server <- function(input, output, session) {
   
   ### Abrir dados do ano_mun
   
-  
+ 
   dados_ano_mun_cargo_turno <- reactive({
     
    
@@ -165,9 +165,11 @@ spatial2Server <- function(input, output, session) {
     
     cat("Data opened")
     
+    dados_ano_mun_cargo_turno <- dados_ano_mun_cargo_turno %>% 
+      filter(!(NUM_VOTAVEL %in% c("95 - NA", "96 - NA")))
+    
     if (input$cargo %in% c(5, 6, 7, 13)){
       dados_ano_mun_cargo_turno <- dados_ano_mun_cargo_turno %>% 
-        mutate(NUM_VOTAVEL=str_sub(NUM_VOTAVEL, 1, 2)) %>%
         group_by(NUM_ZONA, NR_LOCVOT, lat, lon, NUM_VOTAVEL) %>%
         summarize(QTDE_VOTOS=sum(QTDE_VOTOS,na.rm=T),
                   Pct_Votos_LV=sum(Pct_Votos_LV,na.rm=T))
@@ -187,15 +189,17 @@ spatial2Server <- function(input, output, session) {
     
     dados_ano_mun_cargo_turno <- dados_ano_mun_cargo_turno %>% 
       left_join(dados_ano_mun_cargo_turno_other_parties, by=c("NUM_ZONA","NR_LOCVOT"))
-    return(dados_ano_mun_cargo_turno)
+    
+  return(dados_ano_mun_cargo_turno)
   })
   
   
+ 
   dados_ano_mun_cargo_turno_largest_sf <- reactive({
     dados_ano_mun_cargo_turno_largest_sf <- dados_ano_mun_cargo_turno() %>%
       group_by(NUM_ZONA, NR_LOCVOT) %>%
       mutate(Tot_Votos_LV=sum(QTDE_VOTOS,na.rm=T)) %>%
-      filter(Pct_Votos_LV==max(Pct_Votos_LV,na.rm=T)) %>% 
+      filter(Pct_Votos_LV==max(Pct_Votos_LV,na.rm=T)) %>%
       st_as_sf(coords=c("lon", "lat"), crs=4326)
   })
   
@@ -228,8 +232,7 @@ spatial2Server <- function(input, output, session) {
     parties <- dados_ano_mun_cargo_turno_largest_sf() %>% 
       st_drop_geometry() %>%
       ungroup() %>% 
-      distinct(NUM_VOTAVEL) %>%
-      filter(!(NUM_VOTAVEL %in% c(95, 96))) %>%
+      distinct(NUM_VOTAVEL)  %>%
       pull(NUM_VOTAVEL)
     
     cat(parties)
