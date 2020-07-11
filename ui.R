@@ -64,6 +64,7 @@ sidebarPanelUi <- function () {
                uiOutput("turno_UI"),
                uiOutput("ano_UI"),
                uiOutput("partido_UI"),
+              uiOutput("candidato_UI"),
              
              # Botao 'atualizar'
              

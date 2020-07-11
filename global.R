@@ -56,9 +56,9 @@ party_colours <- tibble(NUM_VOTAVEL=factor(c(10, 11, 12, 13, 14, 15,
 
 siglas_partidos$NUM_VOTAVEL <- as.factor(siglas_partidos$NUM_VOTAVEL)
 
-party_colours <- left_join(party_colours, siglas_partidos)
+party_colours <- left_join(party_colours, siglas_partidos, by="NUM_VOTAVEL")
 
-party_colours$NUM_VOTAVEL <- paste(party_colours$NUM_VOTAVEL,"-",
+party_colours$NUM_VOTAVEL_COMB <- paste(party_colours$NUM_VOTAVEL,"-",
                                    party_colours$SIGLA_PARTIDO) 
 party_colours <- party_colours %>% 
   dplyr::select(NUM_VOTAVEL, High_Colour, Low_Colour, palette)
