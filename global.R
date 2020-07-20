@@ -93,6 +93,6 @@ party_colours_discrete <- party_colours %>%
                 "palette"=High_Colour)
 
 party_palette_discrete <- colorFactor(palette=party_colours$High_Colour, 
-                                      levels=party_colours$NUM_VOTAVEL)
+                                      levels=party_colours$SIGLA_PARTIDO)
 
 
