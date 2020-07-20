@@ -5,18 +5,17 @@ library(ggplot2)
 library(dplyr)
 library(tidyr)
 library(stringr)
-library(tibble)
 
 source("global.R")
 
 #input <- c()
 #input$estado <- "SP"
 #input$mun_UI <- "São Paulo"
-#input$cargo <- 13
+#input$cargo <- 11
 #input$ano_UI <- 2016
 #input$turno_UI <- 1
 #input$partido_UI <- 10
-#input$candidato_UI <- "ROBERTO GUASTELLI TESTASECCA"
+#input$candidato_UI <- "ROMEU DE SOUZA PACHECO"
 
 spatial2Server <- function(input, output, session) {
   
@@ -25,7 +24,6 @@ spatial2Server <- function(input, output, session) {
     muns_escolhas <- IBGE_Muns %>% 
       filter(SIGLA_UF == input$estado) %>% 
       pull(NOME_MUNICIPIO)
-    print(Cstack_info())
     return(muns_escolhas)
   })
   
@@ -49,13 +47,12 @@ spatial2Server <- function(input, output, session) {
   output$turno_UI <- renderUI({
     if(!(input$cargo %in% c(1,3,11))){
       return(1)
-      print(Cstack_info())
     } else {
       selectizeInput(
         inputId = "turno_UI",
         label = NULL,
         selected = 1,
-        choices = c("1° Turno"=1, "2° Turno"=2),
+        choices = c(1, 2),
         options = list(
           placeholder = "Selecione um Turno"
         )  
@@ -66,11 +63,9 @@ spatial2Server <- function(input, output, session) {
   output$ano_UI <- renderUI({
     if (input$cargo %in% c(11, 13)){
       anos <- c(2008, 2012, 2016)
-      print(Cstack_info())
-    } else {
+    } else (
       anos <- c(2006, 2010, 2014, 2018)
-      print(Cstack_info())
-    }
+    )
     sliderInput(
       inputId = "ano_UI",
       label = NULL,
@@ -89,20 +84,11 @@ spatial2Server <- function(input, output, session) {
     cat("Parsing partidos_escolhas\n")
     
     if(shiny::req(input$mun_UI) > 0){    
-      print(Cstack_info())
+      
       choices <- dados_ano_mun_cargo_turno() %>%
         pull(NUM_VOTAVEL)
-      choices <- tibble(NUM_VOTAVEL=choices %>% str_sub(1, 2)) %>%
-        distinct()
-      choices <- choices %>% 
-        left_join(party_colours %>% select(NUM_VOTAVEL, SIGLA_PARTIDO) %>% distinct(), 
-                  by="NUM_VOTAVEL") %>%
-        add_row(NUM_VOTAVEL="Partido Mais Votado no LV", 
-                SIGLA_PARTIDO="Partido Mais Votado no LV",
-                .before=1) %>%
-        select(SIGLA_PARTIDO, NUM_VOTAVEL) %>%
-        deframe()
-      
+      choices <- choices %>% str_sub(1, 2)
+      choices <- c("Partido Mais Votado no LV", unique(sort(choices)))
       cat("Parsing partidos_escolhas. CHECK!!!\n")
       return(choices)
     } else if(shiny::req(input$mun_UI) == ""){
@@ -137,20 +123,18 @@ spatial2Server <- function(input, output, session) {
     if(shiny::req(input$partido_UI) != "Partido Mais Votado no LV"){    
       
       if (input$cargo %in% c(5, 6, 7, 13)) {
-        print(Cstack_info())
         choices <- dados_ano_mun_cargo_turno() %>%
           filter(str_length(NUM_VOTAVEL)>2) %>%
           mutate(NUM_PARTIDO=str_sub(NUM_VOTAVEL, 1, 2)) %>%
           filter(NUM_PARTIDO==input$partido_UI) %>%
           pull(NOME_CANDIDATO)
       } else {
-        print(Cstack_info())
         choices <- dados_ano_mun_cargo_turno() %>%
           mutate(NUM_PARTIDO=str_sub(NUM_VOTAVEL, 1, 2)) %>%
           filter(NUM_PARTIDO==input$partido_UI) %>%
           pull(NOME_CANDIDATO) }
       
-      choices <- c("Total do Partido", unique(sort(choices)))
+      choices <- c("Partido Inteiro", unique(sort(choices)))
       cat("Parsing candidatos_escolhas. CHECK!!!\n")
       return(choices)
     } else if(shiny::req(input$mun_UI) == ""){
@@ -186,12 +170,11 @@ spatial2Server <- function(input, output, session) {
       mun_code <- input$estado
     } else if(input$mun_UI > 0){
       mun_code <- IBGE_Muns %>% 
-        filter(NOME_MUNICIPIO == input$mun_UI & SIGLA_UF==input$estado) %>%
-        pull(COD_MUN_IBGE)
+        filter(NOME_MUNICIPIO == input$mun_UI) %>%
+        pull(COD_MUN_IBGE) #Need to add state filter as well here
     } else if(input$mun_UI == ""){
       mun_code <- NULL
     }
-    print(Cstack_info())
     return(mun_code)
   })
   
@@ -204,7 +187,6 @@ spatial2Server <- function(input, output, session) {
       municipio_fronteira <- mun_code()
       
     }
-    print(Cstack_info())
     mun_shp <- readr::read_rds(paste0("data/output/shape_municipios/", 
                                       municipio_fronteira,".rds"))
     
@@ -213,21 +195,17 @@ spatial2Server <- function(input, output, session) {
   form_parties_text <- function(df){
     parties <- colnames(df)[-1:-5]
     text <- c()
-    print(Cstack_info())
     for (i in parties){
       text <- paste0(text, i, ": ",round(df[,i],1),"% <br>")
     }
     return(text)
-    
   }
   
   ano_mun_cargo_turno <- reactive({
     ano <- input$ano_UI
     cargo <- input$cargo
     turno <- input$turno_UI
-    print(Cstack_info())
     ano_mun_cargo_turno <- paste(ano, mun_code(), cargo, turno, sep="_")
-    
   })
   
   ### Abrir dados do ano_mun
@@ -238,30 +216,30 @@ spatial2Server <- function(input, output, session) {
     
     dados_ano_mun_cargo_turno <- readr::read_rds(paste0("data/output/Prepared_Ano_Mun/", 
                                                         ano_mun_cargo_turno(),".rds"))
-    print(Cstack_info())
+    
     
     cat("Data opened")
     
+    #mutate(NUM_PARTIDO=str_sub(NUM_VOTAVEL, 1, 2)) %>%
+    
     #Super heavy to calculate and makes no sense
     if (!(input$cargo %in% c(5, 6, 7, 13))) {
-      dados_ano_mun_cargo_turno_other_parties <- dados_ano_mun_cargo_turno  %>%
-        distinct(NUM_ZONA, NR_LOCVOT) %>%
-        mutate(Other_Parties="")
-      #  dplyr::select(-QTDE_VOTOS) %>% 
-       # pivot_wider(names_from="NUM_VOTAVEL", 
-                    #values_from="Pct_Votos_LV", 
-                    #values_fill=list(Pct_Votos_LV=0)) %>%
-        #rowwise() %>%
-        #do(row = as_data_frame(.)) %>%
-        #mutate(Other_Parties=form_parties_text(row)) %>%
-        #unnest() %>%
-        #dplyr::select(NUM_ZONA, NR_LOCVOT, Other_Parties)
+      dados_ano_mun_cargo_turno_other_parties <- dados_ano_mun_cargo_turno %>% 
+        dplyr::select(-QTDE_VOTOS) %>% 
+        pivot_wider(names_from="NUM_VOTAVEL", 
+                    values_from="Pct_Votos_LV", 
+                    values_fill=list(Pct_Votos_LV=0)) %>%
+        rowwise() %>%
+        do(row = as_data_frame(.)) %>%
+        mutate(Other_Parties=form_parties_text(row)) %>%
+        unnest() %>%
+        dplyr::select(NUM_ZONA, NR_LOCVOT, Other_Parties)
     } else {
       dados_ano_mun_cargo_turno_other_parties <- dados_ano_mun_cargo_turno %>%
         distinct(NUM_ZONA, NR_LOCVOT) %>%
         mutate(Other_Parties="")
     }
-    print(Cstack_info())
+    
       
     dados_ano_mun_cargo_turno <- dados_ano_mun_cargo_turno %>% 
       left_join(dados_ano_mun_cargo_turno_other_parties, by=c("NUM_ZONA","NR_LOCVOT"))
@@ -269,28 +247,14 @@ spatial2Server <- function(input, output, session) {
   })
   
   dados_ano_mun_cargo_turno_largest_sf <- reactive({
-    print(Cstack_info())
-    if (input$cargo %in% c(5, 6, 7, 13)) {
     dados_ano_mun_cargo_turno_largest_sf <- dados_ano_mun_cargo_turno() %>%
-      mutate(NUM_VOTAVEL=str_sub(NUM_VOTAVEL, 1, 2)) %>%
-      group_by(NUM_ZONA, NR_LOCVOT, NUM_VOTAVEL, lon, lat, Other_Parties) %>%
-      summarize(QTDE_VOTOS=sum(QTDE_VOTOS,na.rm=T)) %>%
       group_by(NUM_ZONA, NR_LOCVOT) %>%
-      mutate(Tot_Votos_LV=sum(QTDE_VOTOS,na.rm=T),
-             Pct_Votos_LV=100*(QTDE_VOTOS/sum(QTDE_VOTOS, na.tm=T))) %>%
-      filter(QTDE_VOTOS==max(QTDE_VOTOS,na.rm=T)) %>% 
+      mutate(Tot_Votos_LV=sum(QTDE_VOTOS,na.rm=T)) %>%
+      filter(Pct_Votos_LV==max(Pct_Votos_LV,na.rm=T)) %>% 
       st_as_sf(coords=c("lon", "lat"), crs=4326)
-    } else {
-        dados_ano_mun_cargo_turno_largest_sf <- dados_ano_mun_cargo_turno() %>%
-          group_by(NUM_ZONA, NR_LOCVOT) %>%
-          mutate(Tot_Votos_LV=sum(QTDE_VOTOS,na.rm=T)) %>%
-          filter(Pct_Votos_LV==max(Pct_Votos_LV,na.rm=T)) %>% 
-          st_as_sf(coords=c("lon", "lat"), crs=4326)
-      }
   })
   
   dados_specific_party <- reactive({
-    print(Cstack_info())
     dados_specific_party <- dados_ano_mun_cargo_turno() %>%
       group_by(NUM_ZONA, NR_LOCVOT) %>%
       mutate(Tot_Votos_LV=sum(QTDE_VOTOS,na.rm=T)) %>%
@@ -299,13 +263,11 @@ spatial2Server <- function(input, output, session) {
   })
   
   dados_specific_candidato <- reactive({
-    print(Cstack_info())
     dados_specific_candidato <- dados_ano_mun_cargo_turno() %>%
+      filter(NOME_CANDIDATO==input$candidato_UI) %>% 
       group_by(NUM_ZONA, NR_LOCVOT) %>%
       mutate(Tot_Votos_LV=sum(QTDE_VOTOS,na.rm=T)) %>%
-      filter(NOME_CANDIDATO==input$candidato_UI) %>% 
       st_as_sf(coords=c("lon", "lat"), crs=4326)
-    
   })
   
   dados_to_map <- reactive({
@@ -313,12 +275,11 @@ spatial2Server <- function(input, output, session) {
       return(NULL)
     } else if (input$partido_UI=="Partido Mais Votado no LV") {
       dados_to_map <- dados_ano_mun_cargo_turno_largest_sf()
-    } else if (input$candidato_UI=="Total do Partido") {
+    } else if (input$candidato_UI=="Partido Inteiro") {
       dados_to_map <- dados_specific_party()
     } else {
       dados_to_map <- dados_specific_candidato()
     }
-    print(Cstack_info())
     return(dados_to_map)
   })
   
@@ -332,7 +293,6 @@ spatial2Server <- function(input, output, session) {
       parties <- dados_ano_mun_cargo_turno_largest_sf() %>% 
         st_drop_geometry() %>%
         ungroup() %>% 
-        mutate(NUM_VOTAVEL=str_sub(NUM_VOTAVEL, 1, 2)) %>%
         distinct(NUM_VOTAVEL) %>%
         filter(!(NUM_VOTAVEL %in% c(95, 96))) %>%
         pull(NUM_VOTAVEL)
@@ -379,7 +339,7 @@ spatial2Server <- function(input, output, session) {
   # Distribuicao de votos nos locais de votacao
   
   addLegendCustom <- function(map, colors, 
-                              labels, sizes, opacity = 0.5, title){
+                              labels, sizes, opacity = 0.5){
     colorAdditions <- paste0(colors, "; border-radius: 50%; width:", sizes, 
                              "px; height:", sizes, "px")
     labelAdditions <- paste0("<div style='display: inline-block;height: ", 
@@ -389,8 +349,7 @@ spatial2Server <- function(input, output, session) {
     return(addLegend(map,
                      colors = colorAdditions, 
                      labels = labelAdditions, 
-                     opacity = opacity,
-                     title=title))
+                     opacity = opacity))
   }
   
   
@@ -410,7 +369,7 @@ spatial2Server <- function(input, output, session) {
                          radius= ~log(Tot_Votos_LV/2),
                          popup=~paste0("<h4> Local de Votação ", NR_LOCVOT,"</h4> Partido ",
                                        NUM_VOTAVEL," recebeu ",QTDE_VOTOS," votos, ",
-                                       round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação<br>",
+                                       round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos <br>",
                                        Other_Parties),
                          fillColor = ~party_palettes[[as.character(party)]](Pct_Votos_LV))} %>%   
       
@@ -423,18 +382,16 @@ spatial2Server <- function(input, output, session) {
                 pal = colorNumeric(c(tinter("#525252",direction="tints",steps=10)[3],"#525252"), 
                                    domain=NULL),
                 values=~Pct_Votos_LV,
-                title="<p>Proporção do</p><p>Voto no LV</p>",
+                title="Proporção do Voto",
                 opacity=1
       ) %>%
       addLegendCustom(
         colors = c("grey", "grey", "grey"), 
         labels = c("100", "1000", "10000"), 
-        sizes = c(log(100/2), log(1000/2), log(10000/2)),
-        title="Número de Votos") %>% 
+        sizes = c(log(100/2), log(1000/2), log(10000/2))) %>% 
       flyToBounds(geo[3], geo[4], geo[1], geo[2],
                   options=list(duration=0.1))
-    } else if (input$candidato_UI=="Total do Partido") {
-      
+    } else {
       leafletProxy("map", data=dados_to_map()) %>%
         clearMarkers() %>% 
         clearControls() %>% 
@@ -445,7 +402,7 @@ spatial2Server <- function(input, output, session) {
                          radius= ~log(Tot_Votos_LV/2),
                          popup=~paste0("<h4> Local de Votação ", NR_LOCVOT,"</h4> Partido ",
                                        NUM_VOTAVEL," recebeu ",QTDE_VOTOS," votos, ",
-                                       round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação<br>",
+                                       round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos <br>",
                                        Other_Parties),
                          fillColor = ~party_palettes[[as.character(parties())]](Pct_Votos_LV)) %>%   
       
@@ -458,50 +415,15 @@ spatial2Server <- function(input, output, session) {
                 pal = colorNumeric(c(tinter("#525252",direction="tints",steps=10)[3],"#525252"), 
                                    domain=NULL),
                 values=~Pct_Votos_LV,
-                title="<p>Proporção do</p><p>Voto no LV</p>",
+                title="Proporção do Voto",
                 opacity=1
       ) %>%
       addLegendCustom(
         colors = c("grey", "grey", "grey"), 
         labels = c("100", "1000", "10000"), 
-        sizes = c(log(100/2), log(1000/2), log(10000/2)),
-        title="Número de Votos") %>% 
+        sizes = c(log(100/2), log(1000/2), log(10000/2))) %>% 
       flyToBounds(geo[3], geo[4], geo[1], geo[2],
                   options=list(duration=0.1))
-    } else {
-      leafletProxy("map", data=dados_to_map()) %>%
-        clearMarkers() %>% 
-        clearControls() %>% 
-        addCircleMarkers(data = dados_to_map(), 
-                         stroke = F,
-                         opacity=0.7,
-                         fillOpacity = 0.7,
-                         radius= ~log(Tot_Votos_LV/2),
-                         popup=~paste0("<h4> Local de Votação ", NR_LOCVOT,"</h4> Candidato ",
-                                       NOME_CANDIDATO," recebeu ",QTDE_VOTOS," votos, ",
-                                       round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação<br>",
-                                       Other_Parties),
-                         fillColor = ~party_palettes[[as.character(parties())]](Pct_Votos_LV)) %>%   
-        
-        addLegend(position = "topright", 
-                  pal = party_palette_discrete,
-                  values = ~parties_legend()$NUM_VOTAVEL,
-                  title = "Partidos",
-                  opacity = 1) %>%
-        addLegend(position = "topright",
-                  pal = colorNumeric(c(tinter("#525252",direction="tints",steps=10)[3],"#525252"), 
-                                     domain=NULL),
-                  values=~Pct_Votos_LV,
-                  title="<p>Proporção do</p><p>Voto no LV</p>",
-                  opacity=1
-        ) %>%
-        addLegendCustom(
-          colors = c("grey", "grey", "grey"), 
-          labels = c("100", "1000", "10000"), 
-          sizes = c(log(100/2), log(1000/2), log(10000/2)),
-          title="Número de Votos") %>% 
-        flyToBounds(geo[3], geo[4], geo[1], geo[2],
-                    options=list(duration=0.1))
     }
   })
   
@@ -535,3 +457,4 @@ spatial2Server <- function(input, output, session) {
   })
   
 }
+
