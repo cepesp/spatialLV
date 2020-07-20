@@ -230,6 +230,13 @@ spatial2Server <- function(input, output, session) {
     
   })
   
+  siglas <- reactive({
+    siglas <- party_colours %>% 
+      filter(ANO_ELEICAO==input$ano_UI) %>%
+      select(NUM_VOTAVEL, SIGLA_PARTIDO)
+  })
+  
+  
   ### Abrir dados do ano_mun
   
   
@@ -242,29 +249,14 @@ spatial2Server <- function(input, output, session) {
     
     cat("Data opened")
     
-    #Super heavy to calculate and makes no sense
-    if (!(input$cargo %in% c(5, 6, 7, 13))) {
-      dados_ano_mun_cargo_turno_other_parties <- dados_ano_mun_cargo_turno  %>%
-        distinct(NUM_ZONA, NR_LOCVOT) %>%
-        mutate(Other_Parties="")
-      #  dplyr::select(-QTDE_VOTOS) %>% 
-       # pivot_wider(names_from="NUM_VOTAVEL", 
-                    #values_from="Pct_Votos_LV", 
-                    #values_fill=list(Pct_Votos_LV=0)) %>%
-        #rowwise() %>%
-        #do(row = as_data_frame(.)) %>%
-        #mutate(Other_Parties=form_parties_text(row)) %>%
-        #unnest() %>%
-        #dplyr::select(NUM_ZONA, NR_LOCVOT, Other_Parties)
-    } else {
-      dados_ano_mun_cargo_turno_other_parties <- dados_ano_mun_cargo_turno %>%
-        distinct(NUM_ZONA, NR_LOCVOT) %>%
-        mutate(Other_Parties="")
-    }
+    dados_ano_mun_cargo_turno <- dados_ano_mun_cargo_turno %>% 
+      mutate(NUM_PARTIDO=str_sub(NUM_VOTAVEL, 1, 2)) %>% 
+      left_join(siglas(), 
+                by=c("NUM_PARTIDO"="NUM_VOTAVEL"))%>%
+      mutate(Other_Parties="")
+    
     print(Cstack_info())
       
-    dados_ano_mun_cargo_turno <- dados_ano_mun_cargo_turno %>% 
-      left_join(dados_ano_mun_cargo_turno_other_parties, by=c("NUM_ZONA","NR_LOCVOT"))
     return(dados_ano_mun_cargo_turno)
   })
   
@@ -273,7 +265,7 @@ spatial2Server <- function(input, output, session) {
     if (input$cargo %in% c(5, 6, 7, 13)) {
     dados_ano_mun_cargo_turno_largest_sf <- dados_ano_mun_cargo_turno() %>%
       mutate(NUM_VOTAVEL=str_sub(NUM_VOTAVEL, 1, 2)) %>%
-      group_by(NUM_ZONA, NR_LOCVOT, NUM_VOTAVEL, lon, lat, Other_Parties) %>%
+      group_by(NUM_ZONA, NR_LOCVOT, NUM_VOTAVEL, SIGLA_PARTIDO, lon, lat, Other_Parties) %>%
       summarize(QTDE_VOTOS=sum(QTDE_VOTOS,na.rm=T)) %>%
       group_by(NUM_ZONA, NR_LOCVOT) %>%
       mutate(Tot_Votos_LV=sum(QTDE_VOTOS,na.rm=T),
@@ -324,6 +316,7 @@ spatial2Server <- function(input, output, session) {
   
   ### Partidos
   
+  
   parties <- reactive({
     cat(input$partido_UI)
     if (is.null(input$partido_UI)) {
@@ -332,26 +325,24 @@ spatial2Server <- function(input, output, session) {
       parties <- dados_ano_mun_cargo_turno_largest_sf() %>% 
         st_drop_geometry() %>%
         ungroup() %>% 
-        mutate(NUM_VOTAVEL=str_sub(NUM_VOTAVEL, 1, 2)) %>%
-        distinct(NUM_VOTAVEL) %>%
-        filter(!(NUM_VOTAVEL %in% c(95, 96))) %>%
-        pull(NUM_VOTAVEL)
+        distinct(SIGLA_PARTIDO) %>%
+        pull(SIGLA_PARTIDO)
       
       cat(parties)
     } else {
-      parties <- input$partido_UI
-    }
+      parties <- unique(dados_to_map()$SIGLA_PARTIDO)
+    } 
     cat(parties)
     return(parties)
   })    
   
-  parties_legend <- reactive({
+  #parties_legend <- reactive({
     
-    parties_legend <- party_colours %>% ungroup() %>% 
-      filter(NUM_VOTAVEL %in% parties())
+  #  parties_legend <- siglas %>% ungroup() %>% 
+  #    filter(SIGLA_PARTIDO %in% parties())
     
-    return(parties_legend)
-  })    
+  #  return(parties_legend)
+  #})    
   
   
   ### Mapa
@@ -403,20 +394,20 @@ spatial2Server <- function(input, output, session) {
       leafletProxy("map", data=dados_to_map()) %>%
         clearControls() %>% 
         addCircleMarkers(data = dados_to_map() %>% 
-                           dplyr::filter(NUM_VOTAVEL == party), 
+                           dplyr::filter(SIGLA_PARTIDO == party), 
                          stroke = F,
                          opacity=0.7,
                          fillOpacity = 0.7,
                          radius= ~log(Tot_Votos_LV/2),
                          popup=~paste0("<h4> Local de Votação ", NR_LOCVOT,"</h4> Partido ",
-                                       NUM_VOTAVEL," recebeu ",QTDE_VOTOS," votos, ",
+                                       SIGLA_PARTIDO," recebeu ",QTDE_VOTOS," votos, ",
                                        round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação<br>",
                                        Other_Parties),
                          fillColor = ~party_palettes[[as.character(party)]](Pct_Votos_LV))} %>%   
       
       addLegend(position = "topright", 
                 pal = party_palette_discrete,
-                values = ~parties_legend()$NUM_VOTAVEL,
+                values = ~SIGLA_PARTIDO,
                 title = "Partidos",
                 opacity = 1) %>%
       addLegend(position = "topright",
@@ -444,14 +435,14 @@ spatial2Server <- function(input, output, session) {
                          fillOpacity = 0.7,
                          radius= ~log(Tot_Votos_LV/2),
                          popup=~paste0("<h4> Local de Votação ", NR_LOCVOT,"</h4> Partido ",
-                                       NUM_VOTAVEL," recebeu ",QTDE_VOTOS," votos, ",
+                                       SIGLA_PARTIDO," recebeu ",QTDE_VOTOS," votos, ",
                                        round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação<br>",
                                        Other_Parties),
                          fillColor = ~party_palettes[[as.character(parties())]](Pct_Votos_LV)) %>%   
       
       addLegend(position = "topright", 
                 pal = party_palette_discrete,
-                values = ~parties_legend()$NUM_VOTAVEL,
+                values = ~SIGLA_PARTIDO,
                 title = "Partidos",
                 opacity = 1) %>%
       addLegend(position = "topright",
@@ -485,7 +476,7 @@ spatial2Server <- function(input, output, session) {
         
         addLegend(position = "topright", 
                   pal = party_palette_discrete,
-                  values = ~parties_legend()$NUM_VOTAVEL,
+                  values = ~SIGLA_PARTIDO,
                   title = "Partidos",
                   opacity = 1) %>%
         addLegend(position = "topright",

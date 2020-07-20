@@ -65,12 +65,13 @@ siglas_partidos <- siglas_partidos %>%
 
 party_colours <- left_join(party_colours, siglas_partidos, by="NUM_VOTAVEL")
 
-party_colours$NUM_VOTAVEL_COMB <- paste(party_colours$NUM_VOTAVEL,"-",
-                                   party_colours$SIGLA_PARTIDO) 
-party_colours <- party_colours %>% 
-  dplyr::select(NUM_VOTAVEL, SIGLA_PARTIDO, High_Colour, Low_Colour, palette)
+#party_colours$NUM_VOTAVEL_COMB <- paste(party_colours$NUM_VOTAVEL,"-",
+#                                   party_colours$SIGLA_PARTIDO) 
 
-party_colours <- unique(party_colours)
+party_colours <- party_colours %>% 
+  dplyr::select(ANO_ELEICAO, NUM_VOTAVEL, SIGLA_PARTIDO, High_Colour, Low_Colour, palette)
+
+#party_colours <- unique(party_colours)
 
 #party_palettes <- party_colours %>% 
 #  dplyr::select(palette) %>%
@@ -81,7 +82,7 @@ print(Cstack_info())
 party_palettes <- party_colours %>% 
   dplyr::select(palette) %>%
   pmap(colorNumeric, domain=NULL) %>%
-  setNames(party_colours$NUM_VOTAVEL)
+  setNames(party_colours$SIGLA_PARTIDO)
 
 print(Cstack_info())
 party_colours_discrete <- party_colours %>% 
