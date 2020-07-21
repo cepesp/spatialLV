@@ -16,7 +16,7 @@ source("global.R")
 #input$ano_UI <- 2016
 #input$turno_UI <- 1
 #input$partido_UI <- 10
-#input$candidato_UI <- "ROBERTO GUASTELLI TESTASECCA"
+#input$candidato_UI <- "ALBERTO SABINO DE OLIVEIRA"
 
 spatial2Server <- function(input, output, session) {
   
@@ -236,12 +236,15 @@ spatial2Server <- function(input, output, session) {
       select(NUM_VOTAVEL, SIGLA_PARTIDO)
   })
   
-  
   ### Abrir dados do ano_mun
   
   
   dados_ano_mun_cargo_turno <- reactive({
     
+    #Diagnosing missing parties siglas for specific years
+    #dados_ano_mun_cargo_turno %>% 
+    #  mutate(NUM_PARTIDO=str_sub(NUM_VOTAVEL, 1, 2)) %>%
+    #  distinct(NUM_PARTIDO)  %>% slice(16, 18) pull(NUM_PARTIDO) %in% siglas$NUM_VOTAVEL
     
     dados_ano_mun_cargo_turno <- readr::read_rds(paste0("data/output/Prepared_Ano_Mun/", 
                                                         ano_mun_cargo_turno(),".rds"))
@@ -259,6 +262,8 @@ spatial2Server <- function(input, output, session) {
       
     return(dados_ano_mun_cargo_turno)
   })
+  
+  ## Issue of points overlapping where equal number of votes so no largest, ex. LV_NR 1708 in Aracaju for partido 10
   
   dados_ano_mun_cargo_turno_largest_sf <- reactive({
     print(Cstack_info())
@@ -384,7 +389,6 @@ spatial2Server <- function(input, output, session) {
                      title=title))
   }
   
-  
   observeEvent(input$button,{
     
     geo <- as.numeric(st_bbox(mun_shp()))
@@ -403,25 +407,25 @@ spatial2Server <- function(input, output, session) {
                                        SIGLA_PARTIDO," recebeu ",QTDE_VOTOS," votos, ",
                                        round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação<br>",
                                        Other_Parties),
-                         fillColor = ~party_palettes[[as.character(party)]](Pct_Votos_LV))} %>%   
-      
-      addLegend(position = "topright", 
-                pal = party_palette_discrete,
-                values = ~SIGLA_PARTIDO,
-                title = "Partidos",
-                opacity = 1) %>%
-      addLegend(position = "topright",
-                pal = colorNumeric(c(tinter("#525252",direction="tints",steps=10)[3],"#525252"), 
-                                   domain=NULL),
-                values=~Pct_Votos_LV,
-                title="<p>Proporção do</p><p>Voto no LV</p>",
-                opacity=1
-      ) %>%
-      addLegendCustom(
-        colors = c("grey", "grey", "grey"), 
-        labels = c("100", "1000", "10000"), 
-        sizes = c(log(100/2), log(1000/2), log(10000/2)),
-        title="Número de Votos") %>% 
+                         fillColor = ~party_palettes[[as.character(party)]](Pct_Votos_LV))}  %>%   
+        
+        addLegend(position = "topright", 
+                  pal = party_palette_discrete,
+                  values = ~SIGLA_PARTIDO,
+                  title = "Partidos",
+                  opacity = 1) %>%
+        addLegend(position = "topright",
+                  pal = colorNumeric(c(tinter("#525252",direction="tints",steps=10)[3],"#525252"), 
+                                     domain=NULL),
+                  values=~Pct_Votos_LV,
+                  title="<p>Proporção do</p><p>Voto no LV</p>",
+                  opacity=1
+        ) %>%
+        addLegendCustom(
+          colors = c("grey", "grey", "grey"), 
+          labels = c("100", "1000", "10000"), 
+          sizes = c(log(100/2), log(1000/2), log(10000/2)),
+          title="Número de Votos") %>% 
       flyToBounds(geo[3], geo[4], geo[1], geo[2],
                   options=list(duration=0.1))
     } else if (input$candidato_UI=="Total do Partido") {

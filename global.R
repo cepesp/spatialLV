@@ -11,6 +11,7 @@ print(Cstack_info())
 IBGE_Muns <- readr::read_rds("data/input/IBGE_Muns.rds") #%>%
   #filter(UF=="São Paulo" | COD_MUN_IBGE==3304557)
 print(Cstack_info())
+
 siglas_partidos <- read_delim("data/input/siglas_partidos.csv", 
                               ";", escape_double = FALSE, trim_ws = TRUE)
 print(Cstack_info())
@@ -53,6 +54,7 @@ party_colours <- tibble(NUM_VOTAVEL=factor(c(10, 11, 12, 13, 14, 15,
   rowwise() %>%
   mutate(Low_Colour=tinter(High_Colour, direction="tints", steps=10)[3],
          palette=list(c(Low_Colour, High_Colour)))
+
 print(Cstack_info())
 ## Acrescenta as siglas dos partidos as paletas
 
@@ -60,8 +62,13 @@ siglas_partidos$NUM_VOTAVEL <- as.factor(siglas_partidos$NUM_VOTAVEL)
 
 siglas_partidos <- siglas_partidos %>%
   mutate(NUM_VOTAVEL=as.character(NUM_VOTAVEL)) %>%
-  add_row(NUM_VOTAVEL=95, SIGLA_PARTIDO="Voto Branco") %>%
-  add_row(NUM_VOTAVEL=96, SIGLA_PARTIDO="Voto Nulo")
+  add_row(ANO_ELEICAO=2016, NUM_VOTAVEL=30, SIGLA_PARTIDO="NOVO") %>%
+  add_row(ANO_ELEICAO=2016, NUM_VOTAVEL=35, SIGLA_PARTIDO="PMB") %>%
+  add_row(ANO_ELEICAO=seq(1998, 2018, 2), NUM_VOTAVEL=95, SIGLA_PARTIDO="Voto Branco") %>%
+  add_row(ANO_ELEICAO=seq(1998, 2018, 2), NUM_VOTAVEL=96, SIGLA_PARTIDO="Voto Nulo")
+
+
+siglas_partidos %>% filter(NUM_VOTAVEL==35)
 
 party_colours <- left_join(party_colours, siglas_partidos, by="NUM_VOTAVEL")
 
@@ -80,19 +87,24 @@ party_colours <- party_colours %>%
 print(Cstack_info())
 #With null domain for flexibility to values
 party_palettes <- party_colours %>% 
+  distinct(SIGLA_PARTIDO, High_Colour, Low_Colour, palette) 
+
+party_palettes <- party_palettes %>%
   dplyr::select(palette) %>%
   pmap(colorNumeric, domain=NULL) %>%
-  setNames(party_colours$SIGLA_PARTIDO)
+  setNames(party_palettes$SIGLA_PARTIDO)
 
 print(Cstack_info())
+
 party_colours_discrete <- party_colours %>% 
   ungroup() %>% 
-  dplyr::mutate(NUM_VOTAVEL=factor(NUM_VOTAVEL)) %>% 
-  dplyr::select(NUM_VOTAVEL,High_Colour) %>%
-  dplyr::rename("domain"=NUM_VOTAVEL,
-                "palette"=High_Colour)
+  dplyr::mutate(SIGLA_PARTIDO=factor(SIGLA_PARTIDO)) %>% 
+  dplyr::select(SIGLA_PARTIDO,High_Colour) %>%
+  dplyr::rename("domain"=SIGLA_PARTIDO,
+                "palette"=High_Colour) %>%
+  distinct()
 
-party_palette_discrete <- colorFactor(palette=party_colours$High_Colour, 
-                                      levels=party_colours$SIGLA_PARTIDO)
+party_palette_discrete <- colorFactor(palette=party_colours_discrete$palette, 
+                                      levels=party_colours_discrete$domain)
 
 
