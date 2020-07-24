@@ -1,6 +1,6 @@
 library(shinythemes)
 library(shinyBS)
-library(mapview)
+#library(mapview)
 library(shinyalert)
 
 ### Controles do painel

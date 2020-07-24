@@ -402,7 +402,7 @@ spatial2Server <- function(input, output, session) {
                          stroke = F,
                          opacity=0.7,
                          fillOpacity = 0.7,
-                         radius= ~log(Tot_Votos_LV/2),
+                         radius= ~log(QTDE_VOTOS/2),
                          popup=~paste0("<h4> Local de Votação ", NR_LOCVOT,"</h4>",
                                        SIGLA_PARTIDO," recebeu ",QTDE_VOTOS," votos, ",
                                        round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação<br>",
@@ -422,7 +422,7 @@ spatial2Server <- function(input, output, session) {
                   opacity=1
         ) %>%
         addLegendCustom(
-          colors = c("grey", "grey", "grey"), 
+          colors = c("black", "black", "black"), 
           labels = c("100", "1000", "10000"), 
           sizes = c(log(100/2), log(1000/2), log(10000/2)),
           title="Número de Votos") %>% 
@@ -437,7 +437,7 @@ spatial2Server <- function(input, output, session) {
                          stroke = F,
                          opacity=0.7,
                          fillOpacity = 0.7,
-                         radius= ~log(Tot_Votos_LV/2),
+                         radius= ~log(QTDE_VOTOS/2),
                          popup=~paste0("<h4> Local de Votação ", NR_LOCVOT,"</h4>",
                                        SIGLA_PARTIDO," recebeu ",QTDE_VOTOS," votos, ",
                                        round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação<br>",
@@ -457,7 +457,7 @@ spatial2Server <- function(input, output, session) {
                 opacity=1
       ) %>%
       addLegendCustom(
-        colors = c("grey", "grey", "grey"), 
+        colors = c("black", "black", "black"), 
         labels = c("100", "1000", "10000"), 
         sizes = c(log(100/2), log(1000/2), log(10000/2)),
         title="Número de Votos") %>% 
@@ -471,7 +471,7 @@ spatial2Server <- function(input, output, session) {
                          stroke = F,
                          opacity=0.7,
                          fillOpacity = 0.7,
-                         radius= ~log(Tot_Votos_LV/2),
+                         radius= ~log(QTDE_VOTOS/2),
                          popup=~paste0("<h4> Local de Votação ", NR_LOCVOT,"</h4>",
                                        NOME_CANDIDATO," recebeu ",QTDE_VOTOS," votos, ",
                                        round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação<br>",
@@ -491,7 +491,7 @@ spatial2Server <- function(input, output, session) {
                   opacity=1
         ) %>%
         addLegendCustom(
-          colors = c("grey", "grey", "grey"), 
+          colors = c("black", "black", "black"), 
           labels = c("100", "1000", "10000"), 
           sizes = c(log(100/2), log(1000/2), log(10000/2)),
           title="Número de Votos") %>% 
