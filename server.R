@@ -9,14 +9,13 @@ library(tibble)
 
 source("global.R")
 
-#input <- c()
-#input$estado <- "SP"
-#input$mun_UI <- "São Paulo"
-#input$cargo <- 13
-#input$ano_UI <- 2016
-#input$turno_UI <- 1
-#input$partido_UI <- 10
-#input$candidato_UI <- "ALBERTO SABINO DE OLIVEIRA"
+input <- tibble(estado="SP",
+                mun_UI="São Paulo",
+                cargo=13,
+                ano_UI=2016,
+                turno_UI=1,
+                partido_UI=10,
+                candidato_UI="ALBERTO SABINO DE OLIVEIRA")
 
 spatial2Server <- function(input, output, session) {
   
@@ -112,8 +111,13 @@ spatial2Server <- function(input, output, session) {
   }) 
   
   output$partido_UI <- renderUI({
-    
     partidos <- partidos_escolhas()
+    special_1 <- which(partidos %in% c("Partido Mais Votado no LV"))
+    special_2 <- which(partidos %in% c(95, 96))
+    partidos <- c(partidos[special_1],
+                  partidos[-c(special_1, special_2)][sort(names(partidos[-c(special_1, special_2)]))],
+                  partidos[special_2])
+    
     if(is.null(partidos)){
       cat("Outputing partido_UI. NULL\n")
       return(NULL)
@@ -136,16 +140,25 @@ spatial2Server <- function(input, output, session) {
     
     if(shiny::req(input$partido_UI) != "Partido Mais Votado no LV"){    
       
+      #if (input$eleito==1) {
+      #dados_cands <- dados_ano_mun_cargo_turno() %>%
+      #  filter(eleito==1)
+      #} else {
+      #  dados_cands <- dados_ano_mun_cargo_turno()
+      #}
+      
+      dados_cands <- dados_ano_mun_cargo_turno()
+      
       if (input$cargo %in% c(5, 6, 7, 13)) {
         print(Cstack_info())
-        choices <- dados_ano_mun_cargo_turno() %>%
+        choices <- dados_cands %>%
           filter(str_length(NUM_VOTAVEL)>2) %>%
           mutate(NUM_PARTIDO=str_sub(NUM_VOTAVEL, 1, 2)) %>%
           filter(NUM_PARTIDO==input$partido_UI) %>%
           pull(NOME_CANDIDATO)
       } else {
         print(Cstack_info())
-        choices <- dados_ano_mun_cargo_turno() %>%
+        choices <- dados_cands %>%
           mutate(NUM_PARTIDO=str_sub(NUM_VOTAVEL, 1, 2)) %>%
           filter(NUM_PARTIDO==input$partido_UI) %>%
           pull(NOME_CANDIDATO) }
@@ -402,13 +415,23 @@ spatial2Server <- function(input, output, session) {
                          stroke = F,
                          opacity=0.7,
                          fillOpacity = 0.7,
-                         radius= ~log(QTDE_VOTOS/2),
-                         popup=~paste0("<h4> Local de Votação ", NR_LOCVOT,"</h4>",
+                         radius= ~(QTDE_VOTOS/100),
+                         popup=~paste0("<h4> Local de Votação ", NR_LOCVOT," em Zona ", NUM_ZONA, "</h4>",
                                        SIGLA_PARTIDO," recebeu ",QTDE_VOTOS," votos, ",
                                        round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação<br>",
                                        Other_Parties),
-                         fillColor = ~party_palettes[[as.character(party)]](Pct_Votos_LV))}  %>%   
-        
+                         fillColor = ~party_palettes[[as.character(party)]](Pct_Votos_LV))}  %>% 
+        addCircleMarkers(data = dados_to_map(), 
+                         stroke = T,
+                         opacity=0.7,
+                         radius= ~(Tot_Votos_LV/100),
+                         fillOpacity = 0,
+                         weight=0.5,
+                         col = 'black',
+                         popup=~paste0("<h4> Local de Votação ", NR_LOCVOT," em Zona ", NUM_ZONA, "</h4>",
+                                       SIGLA_PARTIDO," recebeu ",QTDE_VOTOS," votos, ",
+                                       round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação<br>",
+                                       Other_Parties)) %>%   
         addLegend(position = "topright", 
                   pal = party_palette_discrete,
                   values = ~SIGLA_PARTIDO,
@@ -437,13 +460,23 @@ spatial2Server <- function(input, output, session) {
                          stroke = F,
                          opacity=0.7,
                          fillOpacity = 0.7,
-                         radius= ~log(QTDE_VOTOS/2),
-                         popup=~paste0("<h4> Local de Votação ", NR_LOCVOT,"</h4>",
+                         radius= ~(QTDE_VOTOS/100),
+                         popup=~paste0("<h4> Local de Votação ", NR_LOCVOT," em Zona ", NUM_ZONA, "</h4>",
                                        SIGLA_PARTIDO," recebeu ",QTDE_VOTOS," votos, ",
                                        round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação<br>",
                                        Other_Parties),
-                         fillColor = ~party_palettes[[as.character(parties())]](Pct_Votos_LV)) %>%   
-      
+                         fillColor = ~party_palettes[[as.character(parties())]](Pct_Votos_LV)) %>% 
+        addCircleMarkers(data = dados_to_map(), 
+                         stroke = T,
+                         opacity=0.7,
+                         radius= ~(Tot_Votos_LV/100),
+                         fillOpacity = 0,
+                         weight=0.5,
+                         col = 'black',
+                         popup=~paste0("<h4> Local de Votação ", NR_LOCVOT," em Zona ", NUM_ZONA, "</h4>",
+                                       SIGLA_PARTIDO," recebeu ",QTDE_VOTOS," votos, ",
+                                       round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação<br>",
+                                       Other_Parties)) %>%   
       addLegend(position = "topright", 
                 pal = party_palette_discrete,
                 values = ~SIGLA_PARTIDO,
@@ -471,13 +504,23 @@ spatial2Server <- function(input, output, session) {
                          stroke = F,
                          opacity=0.7,
                          fillOpacity = 0.7,
-                         radius= ~log(QTDE_VOTOS/2),
-                         popup=~paste0("<h4> Local de Votação ", NR_LOCVOT,"</h4>",
+                         radius= ~(QTDE_VOTOS/100),
+                         popup=~paste0("<h4> Local de Votação ", NR_LOCVOT," em Zona ", NUM_ZONA, "</h4>",
                                        NOME_CANDIDATO," recebeu ",QTDE_VOTOS," votos, ",
                                        round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação<br>",
                                        Other_Parties),
-                         fillColor = ~party_palettes[[as.character(parties())]](Pct_Votos_LV)) %>%   
-        
+                         fillColor = ~party_palettes[[as.character(parties())]](Pct_Votos_LV)) %>% 
+        addCircleMarkers(data = dados_to_map(), 
+                         stroke = T,
+                         opacity=0.7,
+                         radius= ~(Tot_Votos_LV/100),
+                         fillOpacity = 0,
+                         weight=0.5,
+                         col = 'black',
+                         popup=~paste0("<h4> Local de Votação ", NR_LOCVOT," em Zona ", NUM_ZONA, "</h4>",
+                                       NOME_CANDIDATO," recebeu ",QTDE_VOTOS," votos, ",
+                                       round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação<br>",
+                                       Other_Parties)) %>%   
         addLegend(position = "topright", 
                   pal = party_palette_discrete,
                   values = ~SIGLA_PARTIDO,

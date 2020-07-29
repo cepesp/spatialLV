@@ -64,6 +64,7 @@ sidebarPanelUi <- function () {
                uiOutput("turno_UI"),
                uiOutput("ano_UI"),
                uiOutput("partido_UI"),
+             checkboxInput("eleito", "Somente Candidatos Eleitos?", value = 1),
               uiOutput("candidato_UI"),
              
              # Botao 'atualizar'
