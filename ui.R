@@ -140,48 +140,5 @@ aboutTabPanelUi <- function () {
 
 # ROOT UI COMPONENT
 spatial2Ui <- function () {
-  
- 
-  return (
-    
-    tagList(
-      
-      tags$head(includeCSS("styles.css"),
-                
-                tags$style(HTML("
-                
-                .leaflet-top {
-                 top: 100px;
-                 }
-                
-                .leaflet-top.leaflet-right .leaflet-control{
-                 margin-top: 10px;
-                }"
-                ))),
-        
-      tags$div(class = "btn-header", checked = NA,
-               tags$a(href = "http://cepespdata.io/", 
-                      class="btn btn-primary", 
-                      "Ir para CepespData")),
-      
-      
-      navbarPage("Eleições por Local de Votação", 
-                 theme = shinytheme("lumen"), 
-                 collapsible = TRUE, 
-                 fluid = TRUE,
-                 
-                 mapTabPanelUi(),
-                 aboutTabPanelUi(),
-                 
-                 add_busy_spinner(spin = "fulfilling-bouncing-circle",
-                                  position = "top-right",
-                                  margins = c(300, 650)
-                                  ),
-                 
-                 absolutePanel(id = "controls", class = "panel panel-primary", fixed = F,
-                               draggable = F, top = 60, left = 10, right = "auto", bottom = "auto",
-                               width = 260, height = "auto", sidebarPanelUi())
-      ))
-    
-  )
+  return(NULL)
 }
