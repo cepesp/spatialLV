@@ -358,12 +358,13 @@ spatial2Server <- function(input, output, session) {
   
   output$map <- renderLeaflet({
     
-    geo <- as.numeric(st_bbox(mun_shp()))
+    shp <- mun_shp()
+    geo <- as.numeric(st_bbox(shp))
     
     leaflet(options = leafletOptions(zoomControl = FALSE)) %>%
       clearShapes() %>% 
       clearControls() %>% 
-      addPolygons(data= mun_shp(), 
+      addPolygons(data= shp, 
                   fillOpacity = 0, 
                   weight=2, 
                   color="black") %>% 
