@@ -140,14 +140,13 @@ spatial2Server <- function(input, output, session) {
     
     if(shiny::req(input$partido_UI) != "Partido Mais Votado no LV"){    
       
-      #if (input$eleito==1) {
-      #dados_cands <- dados_ano_mun_cargo_turno() %>%
-      #  filter(eleito==1)
-      #} else {
-      #  dados_cands <- dados_ano_mun_cargo_turno()
-      #}
+      if (input$eleito==1) {
+      dados_cands <- dados_ano_mun_cargo_turno() %>%
+        filter(DESC_SIT_TOT_TURNO %in% c("ELEITO","ELEITO POR QP", "ELEITO POR MEDIA"))
+      } else {
+        dados_cands <- dados_ano_mun_cargo_turno()
+      }
       
-      dados_cands <- dados_ano_mun_cargo_turno()
       
       if (input$cargo %in% c(5, 6, 7, 13)) {
         print(Cstack_info())
@@ -155,13 +154,13 @@ spatial2Server <- function(input, output, session) {
           filter(str_length(NUM_VOTAVEL)>2) %>%
           mutate(NUM_PARTIDO=str_sub(NUM_VOTAVEL, 1, 2)) %>%
           filter(NUM_PARTIDO==input$partido_UI) %>%
-          pull(NOME_CANDIDATO)
+          pull(NOME_URNA_CANDIDATO)
       } else {
         print(Cstack_info())
         choices <- dados_cands %>%
           mutate(NUM_PARTIDO=str_sub(NUM_VOTAVEL, 1, 2)) %>%
           filter(NUM_PARTIDO==input$partido_UI) %>%
-          pull(NOME_CANDIDATO) }
+          pull(NOME_URNA_CANDIDATO) }
       
       choices <- c("Total do Partido", unique(sort(choices)))
       cat("Parsing candidatos_escolhas. CHECK!!!\n")
@@ -283,7 +282,7 @@ spatial2Server <- function(input, output, session) {
     if (input$cargo %in% c(5, 6, 7, 13)) {
     dados_ano_mun_cargo_turno_largest_sf <- dados_ano_mun_cargo_turno() %>%
       mutate(NUM_VOTAVEL=str_sub(NUM_VOTAVEL, 1, 2)) %>%
-      group_by(NUM_ZONA, NR_LOCVOT, NUM_VOTAVEL, SIGLA_PARTIDO, lon, lat, Other_Parties) %>%
+      group_by(NUM_ZONA, NM_LOCVOT, NR_LOCVOT, NUM_VOTAVEL, SIGLA_PARTIDO, lon, lat, Other_Parties) %>%
       summarize(QTDE_VOTOS=sum(QTDE_VOTOS,na.rm=T)) %>%
       group_by(NUM_ZONA, NR_LOCVOT) %>%
       mutate(Tot_Votos_LV=sum(QTDE_VOTOS,na.rm=T),
@@ -292,7 +291,7 @@ spatial2Server <- function(input, output, session) {
       st_as_sf(coords=c("lon", "lat"), crs=4326)
     } else {
         dados_ano_mun_cargo_turno_largest_sf <- dados_ano_mun_cargo_turno() %>%
-          group_by(NUM_ZONA, NR_LOCVOT) %>%
+          group_by(NUM_ZONA, NM_LOCVOT, NR_LOCVOT) %>%
           mutate(Tot_Votos_LV=sum(QTDE_VOTOS,na.rm=T)) %>%
           filter(Pct_Votos_LV==max(Pct_Votos_LV,na.rm=T)) %>% 
           st_as_sf(coords=c("lon", "lat"), crs=4326)
@@ -302,7 +301,7 @@ spatial2Server <- function(input, output, session) {
   dados_specific_party <- reactive({
     print(Cstack_info())
     dados_specific_party <- dados_ano_mun_cargo_turno() %>%
-      group_by(NUM_ZONA, NR_LOCVOT) %>%
+      group_by(NUM_ZONA, NM_LOCVOT, NR_LOCVOT) %>%
       mutate(Tot_Votos_LV=sum(QTDE_VOTOS,na.rm=T)) %>%
       filter(NUM_VOTAVEL==input$partido_UI) %>% 
       st_as_sf(coords=c("lon", "lat"), crs=4326)
@@ -311,9 +310,9 @@ spatial2Server <- function(input, output, session) {
   dados_specific_candidato <- reactive({
     print(Cstack_info())
     dados_specific_candidato <- dados_ano_mun_cargo_turno() %>%
-      group_by(NUM_ZONA, NR_LOCVOT) %>%
+      group_by(NUM_ZONA, NM_LOCVOT, NR_LOCVOT) %>%
       mutate(Tot_Votos_LV=sum(QTDE_VOTOS,na.rm=T)) %>%
-      filter(NOME_CANDIDATO==input$candidato_UI) %>% 
+      filter(NOME_URNA_CANDIDATO==input$candidato_UI) %>% 
       st_as_sf(coords=c("lon", "lat"), crs=4326)
     
   })
@@ -416,7 +415,7 @@ spatial2Server <- function(input, output, session) {
                          opacity=0.7,
                          fillOpacity = 0.7,
                          radius= ~(QTDE_VOTOS/100),
-                         popup=~paste0("<h4> Local de Votação ", NR_LOCVOT," em Zona ", NUM_ZONA, "</h4>",
+                         popup=~paste0("<h4> Local de Votação ",NM_LOCVOT," (", NR_LOCVOT,")"," em Zona ", NUM_ZONA, "</h4>",
                                        SIGLA_PARTIDO," recebeu ",QTDE_VOTOS," votos, ",
                                        round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação<br>",
                                        Other_Parties),
@@ -428,7 +427,7 @@ spatial2Server <- function(input, output, session) {
                          fillOpacity = 0,
                          weight=0.5,
                          col = 'black',
-                         popup=~paste0("<h4> Local de Votação ", NR_LOCVOT," em Zona ", NUM_ZONA, "</h4>",
+                         popup=~paste0("<h4> Local de Votação ",NM_LOCVOT," (", NR_LOCVOT,")"," em Zona ", NUM_ZONA, "</h4>",
                                        SIGLA_PARTIDO," recebeu ",QTDE_VOTOS," votos, ",
                                        round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação<br>",
                                        Other_Parties)) %>%   
@@ -461,7 +460,7 @@ spatial2Server <- function(input, output, session) {
                          opacity=0.7,
                          fillOpacity = 0.7,
                          radius= ~(QTDE_VOTOS/100),
-                         popup=~paste0("<h4> Local de Votação ", NR_LOCVOT," em Zona ", NUM_ZONA, "</h4>",
+                         popup=~paste0("<h4> Local de Votação ",NM_LOCVOT," (", NR_LOCVOT,")"," em Zona ", NUM_ZONA, "</h4>",
                                        SIGLA_PARTIDO," recebeu ",QTDE_VOTOS," votos, ",
                                        round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação<br>",
                                        Other_Parties),
@@ -473,7 +472,7 @@ spatial2Server <- function(input, output, session) {
                          fillOpacity = 0,
                          weight=0.5,
                          col = 'black',
-                         popup=~paste0("<h4> Local de Votação ", NR_LOCVOT," em Zona ", NUM_ZONA, "</h4>",
+                         popup=~paste0("<h4> Local de Votação ",NM_LOCVOT," (", NR_LOCVOT,")"," em Zona ", NUM_ZONA, "</h4>",
                                        SIGLA_PARTIDO," recebeu ",QTDE_VOTOS," votos, ",
                                        round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação<br>",
                                        Other_Parties)) %>%   
@@ -505,8 +504,8 @@ spatial2Server <- function(input, output, session) {
                          opacity=0.7,
                          fillOpacity = 0.7,
                          radius= ~(QTDE_VOTOS/100),
-                         popup=~paste0("<h4> Local de Votação ", NR_LOCVOT," em Zona ", NUM_ZONA, "</h4>",
-                                       NOME_CANDIDATO," recebeu ",QTDE_VOTOS," votos, ",
+                         popup=~paste0("<h4> Local de Votação ",NM_LOCVOT," (", NR_LOCVOT,")"," em Zona ", NUM_ZONA, "</h4>",
+                                       NOME_URNA_CANDIDATO," recebeu ",QTDE_VOTOS," votos, ",
                                        round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação<br>",
                                        Other_Parties),
                          fillColor = ~party_palettes[[as.character(parties())]](Pct_Votos_LV)) %>% 
@@ -517,8 +516,8 @@ spatial2Server <- function(input, output, session) {
                          fillOpacity = 0,
                          weight=0.5,
                          col = 'black',
-                         popup=~paste0("<h4> Local de Votação ", NR_LOCVOT," em Zona ", NUM_ZONA, "</h4>",
-                                       NOME_CANDIDATO," recebeu ",QTDE_VOTOS," votos, ",
+                         popup=~paste0("<h4> Local de Votação ",NM_LOCVOT," (", NR_LOCVOT,")"," em Zona ", NUM_ZONA, "</h4>",
+                                       NOME_URNA_CANDIDATO," recebeu ",QTDE_VOTOS," votos, ",
                                        round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação<br>",
                                        Other_Parties)) %>%   
         addLegend(position = "topright", 

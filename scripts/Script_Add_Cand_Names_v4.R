@@ -35,6 +35,7 @@ parties <- tibble(NUM_VOTAVEL=(c(10, 11, 12, 13, 14, 15,
 
 #files_orig %>% slice(5000) #5000 is prefeito
 #i <- 3962
+#which(files_orig$file=="2012_3550605_13_1.rds")
 
 ibge_key <- read_csv("data/input/aux_mun_code.csv") %>%
   rename("SIGLA_UE"="COD_MUN_TSE") %>%
@@ -122,6 +123,7 @@ files <- files %>% mutate(cands=map(cands, bind_rows, parties))
 }
 
 files <- files %>% mutate(cands=map(cands, select, NUM_VOTAVEL, NOME_CANDIDATO,
+                                    NOME_URNA_CANDIDATO,
                                     DESC_SIT_TOT_TURNO),
                           cands=map(cands, add_branco_nulo))
 
@@ -141,63 +143,7 @@ for (i in 19084:20863) {
 
 #20864 not present; missing a file??
 
-for (i in 20751:20864) {
+for (i in 20644:20863) {
   add_cands(i)  
 }
 
-files$cands[[1]]
-
-temp <- get_candidates(year=2018, position=1)
-temp$NOME_CANDIDATO
-
-temp %>% select(NOME_CANDIDATO, COD_SITUACAO_CANDIDATURA)
-##Problem: Lula appears in 2018 as Pres candidate for PT as I haven't filtered for COD_SITUACAO_CANDIDATURA...
-
-
-#new_files_source <- files_orig %>% slice(c(1:200, 5000:5200)) %>% pull(file)
-new_files_source <- list.files("data/output/Prepared_Ano_Mun/") %>% sample(100)
-
-old_files <- file.path("../../spatial_municipios_8/spatial.municipios/data/output/Prepared_Ano_Mun",new_files_source)
-new_files <- file.path("data/output/Prepared_Ano_Mun",new_files_source)
-
-old_data <- old_files %>% map(readRDS)
-new_data <- new_files %>% map(readRDS)
-
-difs <- tibble(file=new_files_source,
-       old_n=old_data %>% map_dbl(nrow),
-       new_n=new_data %>% map_dbl(nrow)) %>%
-  rownames_to_column() %>%
-  filter(old_n!=new_n)
-
-difs %>% print(n=100)
-
-#11 always different
-#13 always different
-#6 slightly different
-#Sometimes 1 slightly different, and 3
-
-old_data_temp <- old_data %>% pluck(1)
-new_data_temp <- new_data %>% pluck(1)
-
-new_data_temp %>% group_by(NUM_ZONA, NR_LOCVOT, NUM_VOTAVEL, QTDE_VOTOS) %>% 
-  filter(n()>1) %>% print(n=30)
-
-get_elections(year=2018, position=3) %>%
-  filter(COD_MUN_IBGE==3503406 & NUMERO_CANDIDATO==29) %>%
-  select(NOME_URNA_CANDIDATO)
-
-get_candidates(year=2018, position=3) %>%
-  filter(NUMERO_CANDIDATO==29 & SIGLA_UE=="SP") %>%
-  select(NOME_URNA_CANDIDATO, COD_SITUACAO_CANDIDATURA, COD_SIT_TOT_TURNO)
-
-get_candidates(year=2018, position=6) %>%
-  filter(NUMERO_CANDIDATO==5145) %>%
-  select(NOME_URNA_CANDIDATO, COD_SITUACAO_CANDIDATURA, COD_SIT_TOT_TURNO, DESC_SIT_TOT_TURNO)
-
-#line 21 - problem is COD_SIT_TOT_TURNO - remove -1
-#line 55 - problem is COD_SIT_TOT_TURNO - need to remove -1
-#line 43 - problem is COD_SIT_TOT_TURNO - need to remove -1
-
-###***Also note old-date has party added to NUM_VOTAVEL which isn't true for new_dat. At least for cargo 3.
-
-#temp <- readRDS("data/output/Prepared_Ano_Mun/2006_1100205_6_1.rds")
