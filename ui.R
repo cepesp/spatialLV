@@ -13,6 +13,17 @@ sidebarPanelUi <- function () {
              useShinyalert(),
              h4("Opções:"),
              selectizeInput(
+               "cargo",
+               label = NULL,
+               selected = NULL,
+               choices = list("Presidente"=1, "Governador"=3, 
+                              "Senador"=5, "Deputado Federal"=6, 
+                              "Deptuado Estadual"=7, "Prefeito"=11, 
+                              "Vereador"=13),
+               options = list(
+                 placeholder = "Selecione um Estado"
+               )),
+             selectizeInput(
                "estado",
                label = NULL,
                selected = NULL,
@@ -50,17 +61,6 @@ sidebarPanelUi <- function () {
                )
              ),
              uiOutput("mun_UI"),
-             selectizeInput(
-               "cargo",
-               label = NULL,
-               selected = NULL,
-               choices = list("Presidente"=1, "Governador"=3, 
-                              "Senador"=5, "Deputado Federal"=6, 
-                              "Deptuado Estadual"=7, "Prefeito"=11, 
-                              "Vereador"=13),
-               options = list(
-                 placeholder = "Selecione um Estado"
-               )),
                uiOutput("turno_UI"),
                uiOutput("ano_UI"),
                uiOutput("partido_UI"),
