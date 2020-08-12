@@ -9,13 +9,13 @@ library(tibble)
 
 source("global.R")
 
-input <- tibble(estado="SP",
-                mun_UI="São Sebastião",
+input <- tibble(estado="AP",
+                mun_UI="Macapá",
                 cargo=13,
                 ano_UI=2016,
                 turno_UI=1,
-                partido_UI=45,
-                candidato_UI="FELIPE CARDIM")
+                partido_UI=15,
+                candidato_UI="ALINE ALFAIA")
 
 spatial2Server <- function(input, output, session) {
   
@@ -286,7 +286,7 @@ spatial2Server <- function(input, output, session) {
       summarize(QTDE_VOTOS=sum(QTDE_VOTOS,na.rm=T)) %>%
       group_by(NUM_ZONA, NR_LOCVOT) %>%
       mutate(Tot_Votos_LV=sum(QTDE_VOTOS,na.rm=T),
-             Pct_Votos_LV=100*(QTDE_VOTOS/sum(QTDE_VOTOS, na.tm=T))) %>%
+             Pct_Votos_LV=100*(QTDE_VOTOS/sum(QTDE_VOTOS, na.rm=T))) %>%
       filter(QTDE_VOTOS==max(QTDE_VOTOS,na.rm=T)) %>% 
       st_as_sf(coords=c("lon", "lat"), crs=4326)
     } else {
@@ -315,6 +315,9 @@ spatial2Server <- function(input, output, session) {
     dados_specific_candidato <- dados_ano_mun_cargo_turno() %>%
       group_by(NUM_ZONA, NM_LOCVOT, NR_LOCVOT) %>%
       mutate(Tot_Votos_LV=sum(QTDE_VOTOS,na.rm=T)) %>%
+      group_by(NUM_VOTAVEL) %>%
+      mutate(Tot_Votos_Mun=sum(QTDE_VOTOS, na.rm=T),
+             Pct_Votos_Mun=100*QTDE_VOTOS/sum(QTDE_VOTOS, na.rm=T)) %>%
       filter(NOME_URNA_CANDIDATO==input$candidato_UI) %>% 
       st_as_sf(coords=c("lon", "lat"), crs=4326)
     
@@ -450,9 +453,7 @@ spatial2Server <- function(input, output, session) {
           colors = c("black", "black", "black"), 
           labels = c("100", "1000", "10000"), 
           sizes = c(log(100/2), log(1000/2), log(10000/2)),
-          title="Número de Votos") %>% 
-      flyToBounds(geo[3], geo[4], geo[1], geo[2],
-                  options=list(duration=0.1))
+          title="Número de Votos") 
     } else if (input$candidato_UI=="Total do Partido") {
       
       leafletProxy("map", data=dados_to_map()) %>%
@@ -495,9 +496,7 @@ spatial2Server <- function(input, output, session) {
         colors = c("black", "black", "black"), 
         labels = c("100", "1000", "10000"), 
         sizes = c(log(100/2), log(1000/2), log(10000/2)),
-        title="Número de Votos") %>% 
-      flyToBounds(geo[3], geo[4], geo[1], geo[2],
-                  options=list(duration=0.1))
+        title="Número de Votos")
     } else {
       leafletProxy("map", data=dados_to_map()) %>%
         clearMarkers() %>% 
@@ -508,9 +507,9 @@ spatial2Server <- function(input, output, session) {
                          fillOpacity = 0.7,
                          radius= ~(QTDE_VOTOS/100),
                          popup=~paste0("<h4> Local de Votação ",NM_LOCVOT," (", NR_LOCVOT,")"," em Zona ", NUM_ZONA, "</h4>",
-                                       NOME_URNA_CANDIDATO," recebeu ",QTDE_VOTOS," votos, ",
-                                       round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação<br>",
-                                       Other_Parties),
+                                       NOME_URNA_CANDIDATO," (",DESC_SIT_TOT_TURNO,") recebeu ",QTDE_VOTOS," votos, ",
+                                       round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação e ",
+                                       round(Pct_Votos_Mun,1),"% do total do candidato neste município (",Tot_Votos_Mun," votos)."),
                          fillColor = ~party_palettes[[as.character(parties())]](Pct_Votos_LV)) %>% 
         addCircleMarkers(data = dados_to_map(), 
                          stroke = F,
@@ -520,9 +519,9 @@ spatial2Server <- function(input, output, session) {
                          weight=0.5,
                          col = 'black',
                          popup=~paste0("<h4> Local de Votação ",NM_LOCVOT," (", NR_LOCVOT,")"," em Zona ", NUM_ZONA, "</h4>",
-                                       NOME_URNA_CANDIDATO," recebeu ",QTDE_VOTOS," votos, ",
-                                       round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação<br>",
-                                       Other_Parties)) %>%   
+                                       NOME_URNA_CANDIDATO," (",DESC_SIT_TOT_TURNO,") recebeu ",QTDE_VOTOS," votos, ",
+                                       round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação e ",
+                                       round(Pct_Votos_Mun,1),"% do total do candidato neste município (",Tot_Votos_Mun," votos).")) %>%   
         addLegend(position = "topright", 
                   pal = party_palette_discrete,
                   values = ~SIGLA_PARTIDO,
@@ -539,9 +538,7 @@ spatial2Server <- function(input, output, session) {
           colors = c("black", "black", "black"), 
           labels = c("100", "1000", "10000"), 
           sizes = c(log(100/2), log(1000/2), log(10000/2)),
-          title="Número de Votos") %>% 
-        flyToBounds(geo[3], geo[4], geo[1], geo[2],
-                    options=list(duration=0.1))
+          title="Número de Votos") 
     }
   })
   
@@ -575,3 +572,6 @@ spatial2Server <- function(input, output, session) {
   })
   
 }
+#%>% 
+#flyToBounds(geo[3], geo[4], geo[1], geo[2],
+#            options=list(duration=0.1))
