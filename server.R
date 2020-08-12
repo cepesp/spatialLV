@@ -10,12 +10,12 @@ library(tibble)
 source("global.R")
 
 input <- tibble(estado="SP",
-                mun_UI="São Paulo",
+                mun_UI="São Sebastião",
                 cargo=13,
                 ano_UI=2016,
                 turno_UI=1,
-                partido_UI=10,
-                candidato_UI="ALBERTO SABINO DE OLIVEIRA")
+                partido_UI=45,
+                candidato_UI="FELIPE CARDIM")
 
 spatial2Server <- function(input, output, session) {
   
@@ -303,7 +303,10 @@ spatial2Server <- function(input, output, session) {
     dados_specific_party <- dados_ano_mun_cargo_turno() %>%
       group_by(NUM_ZONA, NM_LOCVOT, NR_LOCVOT) %>%
       mutate(Tot_Votos_LV=sum(QTDE_VOTOS,na.rm=T)) %>%
-      filter(NUM_VOTAVEL==input$partido_UI) %>% 
+      filter(NUM_PARTIDO==input$partido_UI) %>% 
+      group_by(NUM_ZONA, NM_LOCVOT, NR_LOCVOT, SIGLA_PARTIDO, NUM_PARTIDO, lon, lat, Other_Parties, Tot_Votos_LV) %>%
+      summarize(QTDE_VOTOS=sum(QTDE_VOTOS, na.rm=T)) %>%
+      mutate(Pct_Votos_LV=100*(QTDE_VOTOS/Tot_Votos_LV)) %>%
       st_as_sf(coords=c("lon", "lat"), crs=4326)
   })
   
@@ -421,10 +424,10 @@ spatial2Server <- function(input, output, session) {
                                        Other_Parties),
                          fillColor = ~party_palettes[[as.character(party)]](Pct_Votos_LV))}  %>% 
         addCircleMarkers(data = dados_to_map(), 
-                         stroke = T,
+                         stroke = F,
                          opacity=0.7,
-                         radius= ~(Tot_Votos_LV/100),
-                         fillOpacity = 0,
+                         radius= 1,
+                         fillOpacity = 0.5,
                          weight=0.5,
                          col = 'black',
                          popup=~paste0("<h4> Local de Votação ",NM_LOCVOT," (", NR_LOCVOT,")"," em Zona ", NUM_ZONA, "</h4>",
@@ -466,10 +469,10 @@ spatial2Server <- function(input, output, session) {
                                        Other_Parties),
                          fillColor = ~party_palettes[[as.character(parties())]](Pct_Votos_LV)) %>% 
         addCircleMarkers(data = dados_to_map(), 
-                         stroke = T,
+                         stroke = F,
                          opacity=0.7,
-                         radius= ~(Tot_Votos_LV/100),
-                         fillOpacity = 0,
+                         radius= 1,
+                         fillOpacity = 0.5,
                          weight=0.5,
                          col = 'black',
                          popup=~paste0("<h4> Local de Votação ",NM_LOCVOT," (", NR_LOCVOT,")"," em Zona ", NUM_ZONA, "</h4>",
@@ -510,10 +513,10 @@ spatial2Server <- function(input, output, session) {
                                        Other_Parties),
                          fillColor = ~party_palettes[[as.character(parties())]](Pct_Votos_LV)) %>% 
         addCircleMarkers(data = dados_to_map(), 
-                         stroke = T,
+                         stroke = F,
                          opacity=0.7,
-                         radius= ~(Tot_Votos_LV/100),
-                         fillOpacity = 0,
+                         radius= 1,
+                         fillOpacity = 0.5,
                          weight=0.5,
                          col = 'black',
                          popup=~paste0("<h4> Local de Votação ",NM_LOCVOT," (", NR_LOCVOT,")"," em Zona ", NUM_ZONA, "</h4>",
