@@ -44,7 +44,7 @@ sidebarPanelUi <- function () {
                            "Pará"="PA",
                            "Paraíba"="PB",
                            "Paraná"="PR",
-                           "Pernambuco"="PB",
+                           "Pernambuco"="PE",
                            "Piauí"="PI",
                            "Rio de Janeiro"="RJ",
                            "Rio Grande do Norte"="RN",
