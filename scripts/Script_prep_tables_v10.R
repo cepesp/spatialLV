@@ -16,7 +16,6 @@ ibge_key <- read_csv("data/input/aux_mun_code.csv") %>%
   select(SIGLA_UE, COD_MUN_IBGE) %>%
   mutate(SIGLA_UE=as.numeric(SIGLA_UE))
 
-
 painel_lvs_secao_all <- painel_lvs_secao %>% 
   select(ANO, CD_LOCALIDADE_TSE, NR_ZONA, NR_LOCVOT, NR_SECAO, lat, lon) %>%
   left_join(ibge_key, by=c("CD_LOCALIDADE_TSE"="SIGLA_UE")) %>%
@@ -37,7 +36,7 @@ read_csv("data/input/aux_mun_code.csv") %>%
 files <- list.files("C:/Users/jonny/Google Drive/Academic/USP/Data/Electoral/Seções Eleitorais",
                     pattern="*.txt", full.names=T, recursive=T)
 
-#files <- files[files %>% str_detect("SP.txt|RJ.txt")]
+#files <- files[files %>% str_detect("RJ.txt")]
 #files <- files[files %>% str_detect("AC.txt")]
 
 #2006 - 2016 same format; 2018 different

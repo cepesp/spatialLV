@@ -5,6 +5,7 @@ library(purrr)
 library(leaflet)
 library(shinybusy)
 library(readr)
+library(shiny)
 
 print(Cstack_info())
 ### Carrega os bancos de dados

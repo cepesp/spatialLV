@@ -20,6 +20,30 @@ input <- tibble(estado="AP",
 
 spatial2Server <- function(input, output, session) {
   
+  observe({
+    query <- parseQueryString(session$clientData$url_search)
+    if (!is.null(query[['cargo']])) {
+      updateSelectInput(session, "cargo", value = query[['cargo']])
+    }
+    if (!is.null(query[['estado']])) {
+      updateSelectInput(session, "estado", value = query[['estado']])
+    }
+    if (!is.null(query[['mun']])) {
+      updateSelectInput(session, "mun_UI", value = query[['mun']])
+    }
+    if (!is.null(query[['turno']])) {
+      updateSelectInput(session, "turno_UI", value = query[['turno']])
+    }
+    if (!is.null(query[['ano']])) {
+      updateSliderInput(session, "ano_UI", value = query[['partido']])
+    }
+    if (!is.null(query[['partido']])) {
+      updateSelectInput(session, "partido_UI", value = query[['partido']])
+    }
+    if (!is.null(query[['candidato']])) {
+      updateSelectInput(session, "candidato_UI", value = query[['candidato']])
+    }
+  })
   
   muns_escolhas <- reactive({
     muns_escolhas <- IBGE_Muns %>% 
