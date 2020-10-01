@@ -33,7 +33,7 @@ for(i in estados){
 
   for(i in seq_along(mun$COD_MUN_IBGE)){
     mun_shape_use <- mun[mun$COD_MUN_IBGE == mun$COD_MUN_IBGE[[i]],]
-    readr::write_rds(mun_shape_use, paste0("data/output/shape_municipios/", 
+    saveRDS(mun_shape_use, paste0("data/output/shape_municipios/", 
                                          mun$COD_MUN_IBGE[[i]],".rds"))
     }
 
@@ -55,7 +55,7 @@ br <- br %>%
   dplyr::rename("UF" = "abbrev_state",
                 "geometry" = "geom")
 
-readr::write_rds(br, paste0("data/output/shape_municipios/br.rds"))
+saveRDS(br, paste0("data/output/shape_municipios/br.rds"))
 
 
 length(list.files("data/output/shape_municipios/"))
@@ -72,6 +72,6 @@ vitoria <- ms_filter_islands(vitoria, min_area = 12391399)
 
 ## Salva o novo shape
 
-readr::write_rds(ES, paste0("data/output/shape_municipios/ES.rds"))
+saveRDS(ES, paste0("data/output/shape_municipios/ES.rds"))
 
-readr::write_rds(vitoria, paste0("data/output/shape_municipios/3205309.rds"))
+saveRDS(vitoria, paste0("data/output/shape_municipios/3205309.rds"))
