@@ -1,6 +1,6 @@
 library(shinythemes)
 library(shinyBS)
-#library(mapview)
+library(mapview)
 library(shinyalert)
 
 ### Controles do painel
@@ -16,12 +16,12 @@ sidebarPanelUi <- function () {
                "cargo",
                label = NULL,
                selected = NULL,
-               choices = list("Presidente"=1, "Governador"=3, 
+               choices = list("","Presidente"=1, "Governador"=3, 
                               "Senador"=5, "Deputado Federal"=6, 
                               "Deptuado Estadual"=7, "Prefeito"=11, 
                               "Vereador"=13),
                options = list(
-                 placeholder = "Selecione um Estado"
+                 placeholder = "Selecione um cargo"
                )),
              selectizeInput(
                "estado",
@@ -57,14 +57,16 @@ sidebarPanelUi <- function () {
                            "Tocantins"="TO"
                            ),
                options = list(
-                 placeholder = "Selecione um Estado"
+                 placeholder = "Selecione um estado"
                )
              ),
              uiOutput("mun_UI"),
                uiOutput("turno_UI"),
                uiOutput("ano_UI"),
                uiOutput("partido_UI"),
-             checkboxInput("eleito", "Somente Candidatos Eleitos?", value = 1),
+             checkboxInput("eleito", 
+                           "Somente candidatos eleitos?", 
+                           value = 1),
               uiOutput("candidato_UI"),
              
              # Botao 'atualizar'
@@ -77,7 +79,7 @@ sidebarPanelUi <- function () {
              
              conditionalPanel(
                condition = 'input.button > 0',
-               downloadButton('downloadMap', 
+               downloadButton(outputId = 'downloadMap', 
                               class="btn btn-success btn-block mt-10", 
                               label = "Download")
              )
