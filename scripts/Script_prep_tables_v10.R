@@ -212,7 +212,7 @@ painel_lvs_secao_votos_inner_mun_ano_cargo_turno_cand <- painel_lvs_secao_votos_
   unnest() %>%
   mutate(SIGLA_UE_MATCH=case_when(CODIGO_CARGO==1~"BR",
                                   CODIGO_CARGO %in% c(3,5,6,7,8,11,13) ~SIGLA_UF)) %>%
-  left_join(cand_data %>% ,
+  left_join(cand_data %>%
             by=c("ANO_ELEICAO",
                  "CODIGO_CARGO",
                  "NUM_TURNO",
