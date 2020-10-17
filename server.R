@@ -71,9 +71,19 @@ spatial2Server <- function(input, output, session) {
   
   
   output$turno_UI <- renderUI({
-    if(!(input$cargo %in% c(1,3,11))){
-      return(1)
-      print(Cstack_info())
+    if (input$cargo==""){
+      return(NULL)
+    }
+    else if(!(input$cargo %in% c(1,3,11))){
+      selectizeInput(
+        inputId = "turno_UI",
+        label = NULL,
+        selected = 1,
+        choices = c("1° Turno"=1),
+        options = list(
+          placeholder = "Selecione um turno"
+        )  
+      )
     } else {
       selectizeInput(
         inputId = "turno_UI",
@@ -540,7 +550,7 @@ if (input$partido_UI=="Partido Mais Votado no LV") {
         sizes = c(log(100/2), log(1000/2), log(10000/2)),
         title="Número de Votos")
     } else {
-      leafletProxy('map'(), data=dados_to_map()) %>%
+      leafletProxy('map', data=dados_to_map()) %>%
         clearMarkers() %>% 
         clearControls() %>% 
         addCircleMarkers(data = dados_to_map(), 

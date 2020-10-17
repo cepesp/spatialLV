@@ -7,15 +7,12 @@ library(shinybusy)
 library(readr)
 library(shiny)
 
-print(Cstack_info())
 ### Carrega os bancos de dados
 IBGE_Muns <- readr::read_rds("data/input/IBGE_Muns.rds") #%>%
   #filter(UF=="São Paulo" | COD_MUN_IBGE==3304557)
-print(Cstack_info())
 
 siglas_partidos <- read_delim("data/input/siglas_partidos.csv", 
                               ";", escape_double = FALSE, trim_ws = TRUE)
-print(Cstack_info())
 
 ### Cria as paletas de cores
 #https://pt.wikipedia.org/wiki/Predefini%C3%A7%C3%A3o:Cor_de_partido_pol%C3%ADtico/BRA
@@ -56,7 +53,6 @@ party_colours <- tibble(NUM_VOTAVEL=factor(c(10, 11, 12, 13, 14, 15,
   mutate(Low_Colour=tinter(High_Colour, direction="tints", steps=10)[3],
          palette=list(c(Low_Colour, High_Colour)))
 
-print(Cstack_info())
 ## Acrescenta as siglas dos partidos as paletas
 
 siglas_partidos$NUM_VOTAVEL <- as.factor(siglas_partidos$NUM_VOTAVEL)
@@ -67,9 +63,6 @@ siglas_partidos <- siglas_partidos %>%
   add_row(ANO_ELEICAO=2016, NUM_VOTAVEL=35, SIGLA_PARTIDO="PMB") %>%
   add_row(ANO_ELEICAO=seq(1998, 2018, 2), NUM_VOTAVEL=95, SIGLA_PARTIDO="Voto Branco") %>%
   add_row(ANO_ELEICAO=seq(1998, 2018, 2), NUM_VOTAVEL=96, SIGLA_PARTIDO="Voto Nulo")
-
-
-siglas_partidos %>% filter(NUM_VOTAVEL==35)
 
 party_colours <- left_join(party_colours, siglas_partidos, by="NUM_VOTAVEL")
 
@@ -85,7 +78,7 @@ party_colours <- party_colours %>%
 #  dplyr::select(palette) %>%
 #  pmap(colorNumeric, domain=c(0,100)) %>%
 #  setNames(party_colours$NUM_VOTAVEL)
-print(Cstack_info())
+
 #With null domain for flexibility to values
 party_palettes <- party_colours %>% 
   distinct(SIGLA_PARTIDO, High_Colour, Low_Colour, palette) 
@@ -94,8 +87,6 @@ party_palettes <- party_palettes %>%
   dplyr::select(palette) %>%
   pmap(colorNumeric, domain=NULL) %>%
   setNames(party_palettes$SIGLA_PARTIDO)
-
-print(Cstack_info())
 
 party_colours_discrete <- party_colours %>% 
   ungroup() %>% 
