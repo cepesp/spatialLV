@@ -1,3 +1,4 @@
+
 library(magrittr)
 library(dplyr)
 library(tinter)
@@ -58,11 +59,19 @@ party_colours <- tibble(NUM_VOTAVEL=factor(c(10, 11, 12, 13, 14, 15,
 siglas_partidos$NUM_VOTAVEL <- as.factor(siglas_partidos$NUM_VOTAVEL)
 
 siglas_partidos <- siglas_partidos %>%
-  mutate(NUM_VOTAVEL=as.character(NUM_VOTAVEL)) %>%
-  add_row(ANO_ELEICAO=2016, NUM_VOTAVEL=30, SIGLA_PARTIDO="NOVO") %>%
-  add_row(ANO_ELEICAO=2016, NUM_VOTAVEL=35, SIGLA_PARTIDO="PMB") %>%
-  add_row(ANO_ELEICAO=seq(1998, 2018, 2), NUM_VOTAVEL=95, SIGLA_PARTIDO="Voto Branco") %>%
-  add_row(ANO_ELEICAO=seq(1998, 2018, 2), NUM_VOTAVEL=96, SIGLA_PARTIDO="Voto Nulo")
+  mutate(NUM_VOTAVEL= as.character(NUM_VOTAVEL)) %>%
+  add_row(ANO_ELEICAO=2016, 
+          NUM_VOTAVEL="30", 
+          SIGLA_PARTIDO="NOVO") %>%
+  add_row(ANO_ELEICAO=2016, 
+          NUM_VOTAVEL="35", 
+          SIGLA_PARTIDO="PMB") %>%
+  add_row(ANO_ELEICAO=seq(1998, 2018, 2), 
+          NUM_VOTAVEL= "95", 
+          SIGLA_PARTIDO="Voto Branco") %>%
+  add_row(ANO_ELEICAO=seq(1998, 2018, 2), 
+          NUM_VOTAVEL= "96", 
+          SIGLA_PARTIDO="Voto Nulo")
 
 party_colours <- left_join(party_colours, siglas_partidos, by="NUM_VOTAVEL")
 

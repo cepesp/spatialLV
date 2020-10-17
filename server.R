@@ -25,22 +25,22 @@ spatial2Server <- function(input, output, session) {
     if (!is.null(query[['cargo']])) {
       updateSelectInput(session, "cargo", value = query[['cargo']])
     }
-    if (!is.null(query[['estado']])) {
+    else if (!is.null(query[['estado']])) {
       updateSelectInput(session, "estado", value = query[['estado']])
     }
-    if (!is.null(query[['mun']])) {
+    else if (!is.null(query[['mun']])) {
       updateSelectInput(session, "mun_UI", value = query[['mun']])
     }
-    if (!is.null(query[['turno']])) {
+    else if (!is.null(query[['turno']])) {
       updateSelectInput(session, "turno_UI", value = query[['turno']])
     }
-    if (!is.null(query[['ano']])) {
+    else if (!is.null(query[['ano']])) {
       updateSliderInput(session, "ano_UI", value = query[['partido']])
     }
-    if (!is.null(query[['partido']])) {
+    else if (!is.null(query[['partido']])) {
       updateSelectInput(session, "partido_UI", value = query[['partido']])
     }
-    if (!is.null(query[['candidato']])) {
+    else if (!is.null(query[['candidato']])) {
       updateSelectInput(session, "candidato_UI", value = query[['candidato']])
     }
   })
@@ -58,6 +58,8 @@ spatial2Server <- function(input, output, session) {
       cat("Outputing muns_UI. NULL\n")
       return(NULL)
     }
+    
+    
     selectizeInput(
       inputId = "mun_UI",
       label = NULL,
@@ -105,6 +107,7 @@ spatial2Server <- function(input, output, session) {
       anos <- c(2006, 2010, 2014, 2018)
       print(Cstack_info())
     }
+    
     sliderInput(
       inputId = "ano_UI",
       label = NULL,
@@ -426,13 +429,13 @@ spatial2Server <- function(input, output, session) {
   
   # Base do mapa
   
-  
+ 
   
   output$map <- renderLeaflet({
      
     geo <- as.numeric(st_bbox(mun_shp()))
     
-    leaflet(options = leafletOptions(zoomControl = FALSE)) %>%
+   leaflet(options = leafletOptions(zoomControl = FALSE)) %>%
       clearShapes() %>% 
       clearControls() %>% 
       addPolygons(data= mun_shp(), 
@@ -506,6 +509,7 @@ if (input$partido_UI=="Partido Mais Votado no LV") {
           labels = c("100", "1000", "10000"), 
           sizes = c(log(100/2), log(1000/2), log(10000/2)),
           title="Número de Votos") 
+  
     } else if (input$candidato_UI=="Total do Partido") {
       
       leafletProxy('map', data=dados_to_map()) %>%
@@ -622,6 +626,189 @@ if (input$partido_UI=="Partido Mais Votado no LV") {
                    equipe do <a href='http://cepesp.io/'> CEPESPData</a>. Desenvolvido pelos pesquisadores do CEPESP. </font>")
     HTML(note)
   })
+
+  
+  ## Download dos mapas
+  
+  dat <- reactive({
+    
+   
+    if (input$partido_UI == "Partido Mais Votado no LV"){
+      
+      for(party in parties()){
+        
+      leaflet(data=dados_to_map(),
+              options = leafletOptions(zoomControl = FALSE)) %>%
+        clearShapes() %>% 
+        clearControls() %>% 
+        addPolygons(data= mun_shp(), 
+                    fillOpacity = 0, 
+                    weight=2, 
+                    color="black") %>% 
+        addProviderTiles(providers$CartoDB.Positron) %>%
+        clearControls() %>% 
+          addCircleMarkers(data = dados_to_map() %>% 
+                             dplyr::filter(SIGLA_PARTIDO == party), 
+                           stroke = F,
+                           opacity=0.7,
+                           fillOpacity = 0.7,
+                           radius= ~(QTDE_VOTOS/100),
+                           popup=~paste0("<h4> Local de Votação ",NM_LOCVOT," na Zona ", NUM_ZONA, "</h4>",
+                                         SIGLA_PARTIDO," recebeu ",QTDE_VOTOS," votos, ",
+                                         round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação<br>",
+                                         Other_Parties),
+                           fillColor = ~party_palettes[[as.character(party)]](Pct_Votos_LV))}  %>% 
+        addCircleMarkers(data = dados_to_map(), 
+                         stroke = F,
+                         opacity=0.7,
+                         radius= 1,
+                         fillOpacity = 0.5,
+                         weight=0.5,
+                         col = 'black',
+                         popup=~paste0("<h4> Local de Votação ",NM_LOCVOT," na Zona ", NUM_ZONA, "</h4>",
+                                       SIGLA_PARTIDO," recebeu ",QTDE_VOTOS," votos, ",
+                                       round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação<br>",
+                                       Other_Parties)) %>%   
+        addLegend(position = "topright", 
+                  pal = party_palette_discrete,
+                  values = ~SIGLA_PARTIDO,
+                  title = "Partidos",
+                  opacity = 1) %>%
+        addLegend(position = "topright",
+                  pal = colorNumeric(c(tinter("#525252",direction="tints",steps=10)[3],"#525252"), 
+                                     domain=NULL),
+                  values=~Pct_Votos_LV,
+                  title="<p>Proporção do</p><p>Voto no LV</p>",
+                  opacity=1
+        ) %>%
+        addLegendCustom(
+          colors = c("black", "black", "black"), 
+          labels = c("100", "1000", "10000"), 
+          sizes = c(log(100/2), log(1000/2), log(10000/2)),
+          title="Número de Votos") 
+      
+    } else if(input$candidato_UI=="Total do Partido") {
+      
+      leaflet(data=dados_to_map(),
+              options = leafletOptions(zoomControl = FALSE)) %>%
+        clearShapes() %>% 
+        clearControls() %>% 
+        addPolygons(data= mun_shp(), 
+                    fillOpacity = 0, 
+                    weight=2, 
+                    color="black") %>% 
+        addProviderTiles(providers$CartoDB.Positron) %>%
+        clearControls() %>% 
+        addCircleMarkers(data = dados_to_map(), 
+                         stroke = F,
+                         opacity=0.7,
+                         fillOpacity = 0.7,
+                         radius= ~(QTDE_VOTOS/100),
+                         popup=~paste0("<h4> Local de Votação ",NM_LOCVOT," (", NR_LOCVOT,")"," em Zona ", NUM_ZONA, "</h4>",
+                                       SIGLA_PARTIDO," recebeu ",QTDE_VOTOS," votos, ",
+                                       round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação<br>",
+                                       Other_Parties),
+                         fillColor = ~party_palettes[[as.character(parties())]](Pct_Votos_LV)) %>% 
+        addCircleMarkers(data = dados_to_map(), 
+                         stroke = F,
+                         opacity=0.7,
+                         radius= 1,
+                         fillOpacity = 0.5,
+                         weight=0.5,
+                         col = 'black',
+                         popup=~paste0("<h4> Local de Votação ",NM_LOCVOT," (", NR_LOCVOT,")"," em Zona ", NUM_ZONA, "</h4>",
+                                       SIGLA_PARTIDO," recebeu ",QTDE_VOTOS," votos, ",
+                                       round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação<br>",
+                                       Other_Parties)) %>%   
+        addLegend(position = "topright", 
+                  pal = party_palette_discrete,
+                  values = ~SIGLA_PARTIDO,
+                  title = "Partidos",
+                  opacity = 1) %>%
+        addLegend(position = "topright",
+                  pal = colorNumeric(c(tinter("#525252",direction="tints",steps=10)[3],"#525252"), 
+                                     domain=NULL),
+                  values=~Pct_Votos_LV,
+                  title="<p>Proporção do</p><p>Voto no LV</p>",
+                  opacity=1
+        ) %>%
+        addLegendCustom(
+          colors = c("black", "black", "black"), 
+          labels = c("100", "1000", "10000"), 
+          sizes = c(log(100/2), log(1000/2), log(10000/2)),
+          title="Número de Votos")
+      
+    } else {
+      
+      leaflet(data= dados_to_map(),
+              options = leafletOptions(zoomControl = FALSE)) %>%
+        clearShapes() %>% 
+        clearControls() %>% 
+        addPolygons(data= mun_shp(), 
+                    fillOpacity = 0, 
+                    weight=2, 
+                    color="black") %>% 
+        addProviderTiles(providers$CartoDB.Positron) %>%
+        clearMarkers() %>% 
+        clearControls() %>% 
+        addCircleMarkers(data = dados_to_map(), 
+                         stroke = F,
+                         opacity=0.7,
+                         fillOpacity = 0.7,
+                         radius= ~(QTDE_VOTOS/100),
+                         popup=~paste0("<h4> Local de Votação ",NM_LOCVOT," (", NR_LOCVOT,")"," em Zona ", NUM_ZONA, "</h4>",
+                                       NOME_URNA_CANDIDATO," (",DESC_SIT_TOT_TURNO,") recebeu ",QTDE_VOTOS," votos, ",
+                                       round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação e ",
+                                       round(Pct_Votos_Mun,1),"% do total do candidato neste município (",Tot_Votos_Mun," votos)."),
+                         fillColor = ~party_palettes[[as.character(parties())]](Pct_Votos_LV)) %>% 
+        addCircleMarkers(data = dados_to_map(), 
+                         stroke = F,
+                         opacity=0.7,
+                         radius= 1,
+                         fillOpacity = 0.5,
+                         weight=0.5,
+                         col = 'black',
+                         popup=~paste0("<h4> Local de Votação ",NM_LOCVOT," (", NR_LOCVOT,")"," em Zona ", NUM_ZONA, "</h4>",
+                                       NOME_URNA_CANDIDATO," (",DESC_SIT_TOT_TURNO,") recebeu ",QTDE_VOTOS," votos, ",
+                                       round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação e ",
+                                       round(Pct_Votos_Mun,1),"% do total do candidato neste município (",Tot_Votos_Mun," votos).")) %>%   
+        addLegend(position = "topright", 
+                  pal = party_palette_discrete,
+                  values = ~SIGLA_PARTIDO,
+                  title = "Partidos",
+                  opacity = 1) %>%
+        addLegend(position = "topright",
+                  pal = colorNumeric(c(tinter("#525252",direction="tints",steps=10)[3],"#525252"), 
+                                     domain=NULL),
+                  values=~Pct_Votos_LV,
+                  title="<p>Proporção do</p><p>Voto no LV</p>",
+                  opacity=1
+        ) %>%
+        addLegendCustom(
+          colors = c("black", "black", "black"), 
+          labels = c("100", "1000", "10000"), 
+          sizes = c(log(100/2), log(1000/2), log(10000/2)),
+          title="Número de Votos") 
+    }
+  })
   
  
+  ## Botao para download
+  
+ output$downloadMap <- downloadHandler(
+    filename = paste0("CepespData",
+                      "_",
+                    req(input$ano_UI, cancelOutput = TRUE),
+                      "_",
+                    req(input$estado, cancelOutput = TRUE), 
+                      "_",
+                     req(input$cargo, cancelOutput = TRUE),
+                      "_Turno_", 
+                    req(input$turno_UI, cancelOutput = TRUE),
+                      ".png"),
+    
+    content = function(file) {
+      mapshot(dat(), file = file, selfcontained = FALSE)
+    }
+  )
 }
