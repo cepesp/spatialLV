@@ -132,7 +132,9 @@ spatial2Server <- function(input, output, session) {
       choices <- tibble(NUM_VOTAVEL=choices %>% str_sub(1, 2)) %>%
         distinct()
       choices <- choices %>% 
-        left_join(party_colours %>% select(NUM_VOTAVEL, SIGLA_PARTIDO) %>% distinct(), 
+        left_join(party_colours %>% 
+                    filter(ANO_ELEICAO==input$ano_UI) %>%
+                    select(NUM_VOTAVEL, SIGLA_PARTIDO) %>% distinct(), 
                   by="NUM_VOTAVEL") %>%
         add_row(NUM_VOTAVEL="Partido Mais Votado no LV", 
                 SIGLA_PARTIDO="Partido Mais Votado no LV",
@@ -178,8 +180,8 @@ spatial2Server <- function(input, output, session) {
     if(shiny::req(input$partido_UI) != "Partido Mais Votado no LV"){    
       
       if (input$eleito==1) {
-      dados_cands <- dados_ano_mun_cargo_turno() %>%
-        filter(DESC_SIT_TOT_TURNO %in% c("ELEITO","ELEITO POR QP", "ELEITO POR MEDIA"))
+        dados_cands <- dados_ano_mun_cargo_turno() %>%
+          filter(DESC_SIT_TOT_TURNO %in% c("ELEITO","ELEITO POR QP", "ELEITO POR MEDIA"))
       } else {
         dados_cands <- dados_ano_mun_cargo_turno()
       }
@@ -307,7 +309,7 @@ spatial2Server <- function(input, output, session) {
       mutate(Other_Parties="")
     
     print(Cstack_info())
-      
+    
     return(dados_ano_mun_cargo_turno)
   })
   
@@ -322,22 +324,22 @@ spatial2Server <- function(input, output, session) {
   dados_ano_mun_cargo_turno_largest_sf <- reactive({
     print(Cstack_info())
     if (input$cargo %in% c(5, 6, 7, 13)) {
-    dados_ano_mun_cargo_turno_largest_sf <- dados_ano_mun_cargo_turno() %>%
-      mutate(NUM_VOTAVEL=str_sub(NUM_VOTAVEL, 1, 2)) %>%
-      group_by(NUM_ZONA, NM_LOCVOT, NR_LOCVOT, NUM_VOTAVEL, SIGLA_PARTIDO, lon, lat, Other_Parties) %>%
-      summarize(QTDE_VOTOS=sum(QTDE_VOTOS,na.rm=T)) %>%
-      group_by(NUM_ZONA, NR_LOCVOT) %>%
-      mutate(Tot_Votos_LV=sum(QTDE_VOTOS,na.rm=T),
-             Pct_Votos_LV=100*(QTDE_VOTOS/sum(QTDE_VOTOS, na.rm=T))) %>%
-      filter(QTDE_VOTOS==max(QTDE_VOTOS,na.rm=T)) %>% 
-      st_as_sf(coords=c("lon", "lat"), crs=4326)
+      dados_ano_mun_cargo_turno_largest_sf <- dados_ano_mun_cargo_turno() %>%
+        mutate(NUM_VOTAVEL=str_sub(NUM_VOTAVEL, 1, 2)) %>%
+        group_by(NUM_ZONA, NM_LOCVOT, NR_LOCVOT, NUM_VOTAVEL, SIGLA_PARTIDO, lon, lat, Other_Parties) %>%
+        summarize(QTDE_VOTOS=sum(QTDE_VOTOS,na.rm=T)) %>%
+        group_by(NUM_ZONA, NR_LOCVOT) %>%
+        mutate(Tot_Votos_LV=sum(QTDE_VOTOS,na.rm=T),
+               Pct_Votos_LV=100*(QTDE_VOTOS/sum(QTDE_VOTOS, na.rm=T))) %>%
+        filter(QTDE_VOTOS==max(QTDE_VOTOS,na.rm=T)) %>% 
+        st_as_sf(coords=c("lon", "lat"), crs=4326)
     } else {
-        dados_ano_mun_cargo_turno_largest_sf <- dados_ano_mun_cargo_turno() %>%
-          group_by(NUM_ZONA, NM_LOCVOT, NR_LOCVOT) %>%
-          mutate(Tot_Votos_LV=sum(QTDE_VOTOS,na.rm=T)) %>%
-          filter(Pct_Votos_LV==max(Pct_Votos_LV,na.rm=T)) %>% 
-          st_as_sf(coords=c("lon", "lat"), crs=4326)
-      }
+      dados_ano_mun_cargo_turno_largest_sf <- dados_ano_mun_cargo_turno() %>%
+        group_by(NUM_ZONA, NM_LOCVOT, NR_LOCVOT) %>%
+        mutate(Tot_Votos_LV=sum(QTDE_VOTOS,na.rm=T)) %>%
+        filter(Pct_Votos_LV==max(Pct_Votos_LV,na.rm=T)) %>% 
+        st_as_sf(coords=c("lon", "lat"), crs=4326)
+    }
   })
   
   dados_specific_party <- reactive({
@@ -351,7 +353,7 @@ spatial2Server <- function(input, output, session) {
     
     dados_specific_party <- unique_LVs() %>% 
       left_join(dados_specific_party_temp, by=c("NUM_ZONA","NM_LOCVOT",
-                                                    "NR_LOCVOT")) %>%
+                                                "NR_LOCVOT")) %>%
       ungroup() %>%
       fill(SIGLA_PARTIDO, 
            .direction="downup") %>%
@@ -371,7 +373,7 @@ spatial2Server <- function(input, output, session) {
     
     dados_specific_candidato <- unique_LVs() %>% 
       left_join(dados_specific_candidato_temp, by=c("NUM_ZONA","NM_LOCVOT",
-                                               "NR_LOCVOT")) %>%
+                                                    "NR_LOCVOT")) %>%
       ungroup() %>%
       fill(NUM_VOTAVEL, NOME_CANDIDATO, NOME_URNA_CANDIDATO,
            DESC_SIT_TOT_TURNO, SIGLA_PARTIDO, Tot_Votos_Mun, 
@@ -379,7 +381,7 @@ spatial2Server <- function(input, output, session) {
       replace_na(list(QTDE_VOTOS=0, Pct_Votos_LV=0, 
                       Pct_Votos_Mun=0))
   })
-
+  
   dados_to_map <- reactive({
     if (is.null(input$partido_UI)) {
       return(NULL)
@@ -417,10 +419,10 @@ spatial2Server <- function(input, output, session) {
   })    
   
   #parties_legend <- reactive({
-    
+  
   #  parties_legend <- siglas %>% ungroup() %>% 
   #    filter(SIGLA_PARTIDO %in% parties())
-    
+  
   #  return(parties_legend)
   #})    
   
@@ -429,13 +431,13 @@ spatial2Server <- function(input, output, session) {
   
   # Base do mapa
   
- 
+  
   
   output$map <- renderLeaflet({
-     
+    
     geo <- as.numeric(st_bbox(mun_shp()))
     
-   leaflet(options = leafletOptions(zoomControl = FALSE)) %>%
+    leaflet(options = leafletOptions(zoomControl = FALSE)) %>%
       clearShapes() %>% 
       clearControls() %>% 
       addPolygons(data= mun_shp(), 
@@ -466,21 +468,21 @@ spatial2Server <- function(input, output, session) {
   
   observeEvent(input$button,{
     
-if (input$partido_UI=="Partido Mais Votado no LV") {
-  
-    for(party in parties()){
-      leafletProxy('map', data=dados_to_map()) %>%
-        addCircleMarkers(data = dados_to_map() %>% 
-                           dplyr::filter(SIGLA_PARTIDO == party), 
-                         stroke = F,
-                         opacity=0.7,
-                         fillOpacity = 0.7,
-                         radius= ~(QTDE_VOTOS/100),
-                         popup=~paste0("<h4> Local de Votação ",NM_LOCVOT," na Zona ", NUM_ZONA, "</h4>",
-                                       SIGLA_PARTIDO," recebeu ",QTDE_VOTOS," votos, ",
-                                       round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação<br>",
-                                       Other_Parties),
-                         fillColor = ~party_palettes[[as.character(party)]](Pct_Votos_LV))}  %>% 
+    if (input$partido_UI=="Partido Mais Votado no LV") {
+      
+      for(party in parties()){
+        leafletProxy('map', data=dados_to_map()) %>%
+          addCircleMarkers(data = dados_to_map() %>% 
+                             dplyr::filter(SIGLA_PARTIDO == party), 
+                           stroke = F,
+                           opacity=0.7,
+                           fillOpacity = 0.7,
+                           radius= ~(QTDE_VOTOS/100),
+                           popup=~paste0("<h4> Local de Votação ",NM_LOCVOT," na Zona ", NUM_ZONA, "</h4>",
+                                         SIGLA_PARTIDO," recebeu ",QTDE_VOTOS," votos, ",
+                                         round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação<br>",
+                                         Other_Parties),
+                           fillColor = ~party_palettes[[as.character(party)]](Pct_Votos_LV))}  %>% 
         addCircleMarkers(data = dados_to_map(), 
                          stroke = F,
                          opacity=0.7,
@@ -509,7 +511,7 @@ if (input$partido_UI=="Partido Mais Votado no LV") {
           labels = c("100", "1000", "10000"), 
           sizes = c(log(100/2), log(1000/2), log(10000/2)),
           title="Número de Votos") 
-  
+      
     } else if (input$candidato_UI=="Total do Partido") {
       
       leafletProxy('map', data=dados_to_map()) %>%
@@ -536,23 +538,23 @@ if (input$partido_UI=="Partido Mais Votado no LV") {
                                        SIGLA_PARTIDO," recebeu ",QTDE_VOTOS," votos, ",
                                        round(Pct_Votos_LV,1),"% do total de ",Tot_Votos_LV," votos no local de votação<br>",
                                        Other_Parties)) %>%   
-      addLegend(position = "topright", 
-                pal = party_palette_discrete,
-                values = ~SIGLA_PARTIDO,
-                title = "Partidos",
-                opacity = 1) %>%
-      addLegend(position = "topright",
-                pal = colorNumeric(c(tinter("#525252",direction="tints",steps=10)[3],"#525252"), 
-                                   domain=NULL),
-                values=~Pct_Votos_LV,
-                title="<p>Proporção do</p><p>Voto no LV</p>",
-                opacity=1
-      ) %>%
-      addLegendCustom(
-        colors = c("black", "black", "black"), 
-        labels = c("100", "1000", "10000"), 
-        sizes = c(log(100/2), log(1000/2), log(10000/2)),
-        title="Número de Votos")
+        addLegend(position = "topright", 
+                  pal = party_palette_discrete,
+                  values = ~SIGLA_PARTIDO,
+                  title = "Partidos",
+                  opacity = 1) %>%
+        addLegend(position = "topright",
+                  pal = colorNumeric(c(tinter("#525252",direction="tints",steps=10)[3],"#525252"), 
+                                     domain=NULL),
+                  values=~Pct_Votos_LV,
+                  title="<p>Proporção do</p><p>Voto no LV</p>",
+                  opacity=1
+        ) %>%
+        addLegendCustom(
+          colors = c("black", "black", "black"), 
+          labels = c("100", "1000", "10000"), 
+          sizes = c(log(100/2), log(1000/2), log(10000/2)),
+          title="Número de Votos")
     } else {
       leafletProxy('map', data=dados_to_map()) %>%
         clearMarkers() %>% 
@@ -626,27 +628,27 @@ if (input$partido_UI=="Partido Mais Votado no LV") {
                    equipe do <a href='http://cepesp.io/'> CEPESPData</a>. Desenvolvido pelos pesquisadores do CEPESP. </font>")
     HTML(note)
   })
-
+  
   
   ## Download dos mapas
   
   dat <- reactive({
     
-   
+    
     if (input$partido_UI == "Partido Mais Votado no LV"){
       
       for(party in parties()){
         
-      leaflet(data=dados_to_map(),
-              options = leafletOptions(zoomControl = FALSE)) %>%
-        clearShapes() %>% 
-        clearControls() %>% 
-        addPolygons(data= mun_shp(), 
-                    fillOpacity = 0, 
-                    weight=2, 
-                    color="black") %>% 
-        addProviderTiles(providers$CartoDB.Positron) %>%
-        clearControls() %>% 
+        leaflet(data=dados_to_map(),
+                options = leafletOptions(zoomControl = FALSE)) %>%
+          clearShapes() %>% 
+          clearControls() %>% 
+          addPolygons(data= mun_shp(), 
+                      fillOpacity = 0, 
+                      weight=2, 
+                      color="black") %>% 
+          addProviderTiles(providers$CartoDB.Positron) %>%
+          clearControls() %>% 
           addCircleMarkers(data = dados_to_map() %>% 
                              dplyr::filter(SIGLA_PARTIDO == party), 
                            stroke = F,
@@ -792,19 +794,19 @@ if (input$partido_UI=="Partido Mais Votado no LV") {
     }
   })
   
- 
+  
   ## Botao para download
   
- output$downloadMap <- downloadHandler(
+  output$downloadMap <- downloadHandler(
     filename = paste0("CepespData",
                       "_",
-                    req(input$ano_UI, cancelOutput = TRUE),
+                      req(input$ano_UI, cancelOutput = TRUE),
                       "_",
-                    req(input$estado, cancelOutput = TRUE), 
+                      req(input$estado, cancelOutput = TRUE), 
                       "_",
-                     req(input$cargo, cancelOutput = TRUE),
+                      req(input$cargo, cancelOutput = TRUE),
                       "_Turno_", 
-                    req(input$turno_UI, cancelOutput = TRUE),
+                      req(input$turno_UI, cancelOutput = TRUE),
                       ".png"),
     
     content = function(file) {
